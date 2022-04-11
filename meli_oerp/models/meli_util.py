@@ -62,6 +62,7 @@ class MeliApi( meli.RestClientApi ):
             atok = ("access_token" in params and params["access_token"]) or ""
             if (atok=="PASIVA"):
                 atok = ""
+                del params["access_token"]
             scroll_id = ("scroll_id" in params and params["scroll_id"]) or None
             if atok:
                 del params["access_token"]
