@@ -1621,7 +1621,7 @@ class product_product(models.Model):
                             if ("id" in att and att["id"] == "SELLER_SKU"):
                                 rjson['variations'][vindex]["seller_sku"] = att["value_name"]
             _logger.info(rjson['variations'])
-
+            _logger.info("realmeliv:"+str(realmeliv))
             if ( realmeliv>0 and 1==1 ):
                 #associate var ids for every variant
                 product_template.meli_pub_as_variant = True
@@ -1656,10 +1656,10 @@ class product_product(models.Model):
         _product_meli_id = product.meli_id
 
         #this write pull the trigger for create_variant_ids()...
-        #_logger.info("rewrite to create variants")
+        _logger.info("rewrite to create variants")
         if (company.mercadolibre_update_existings_variants):
             product_template.write({ 'attribute_line_ids': product_template.attribute_line_ids  })
-        #_logger.info("published_att_variants:"+str(published_att_variants))
+        _logger.info("published_att_variants:"+str(published_att_variants))
         if (published_att_variants):
             product_template.meli_pub_as_variant = True
 
@@ -1682,16 +1682,16 @@ class product_product(models.Model):
                 _v_default_code = ""
                 for att in att_value_ids(variant):
                     _v_default_code = _v_default_code + att.attribute_id.name+':'+att.name+';'
-                #_logger.info("_v_default_code: " + _v_default_code)
+                _logger.info("_v_default_code: " + _v_default_code)
                 for variation in rjson['variations']:
-                    #_logger.info(variation)
-                    #_logger.info("variation[default_code]: " + variation["default_code"])
+                    _logger.info(variation)
+                    _logger.info("variation[default_code]: " + variation["default_code"])
                     is_v_comb = variant.is_variant_in_combination( variation["default_code"], _v_default_code )
-                    #_logger.info("variation[default_code]: " + variation["default_code"]+" is_v_comb:"+str(is_v_comb))
+                    _logger.info("variation[default_code]: " + variation["default_code"]+" is_v_comb:"+str(is_v_comb))
                     if ( len(variation["default_code"]) and is_v_comb):
                         if ("seller_custom_field" in variation or "seller_sku" in variation):
-                            #_logger.info("has_sku")
-                            #_logger.info(variation["seller_custom_field"])
+                            _logger.info("has_sku")
+                            _logger.info(variation["seller_custom_field"])
                             try:
                                 variant.default_code = ("seller_sku" in variation and variation["seller_sku"]) or ("seller_custom_field" in variation and variation["seller_custom_field"])
                                 _logger.info("Assigned:"+str(variant.default_code))
