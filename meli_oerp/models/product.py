@@ -1691,7 +1691,7 @@ class product_product(models.Model):
                     if ( len(variation["default_code"]) and is_v_comb):
                         if ("seller_custom_field" in variation or "seller_sku" in variation):
                             _logger.info("has_sku")
-                            _logger.info(variation["seller_custom_field"])
+                            _logger.info(variation["seller_sku"])
                             try:
                                 variant.default_code = ("seller_sku" in variation and variation["seller_sku"]) or ("seller_custom_field" in variation and variation["seller_custom_field"])
                                 _logger.info("Assigned:"+str(variant.default_code))
