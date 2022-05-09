@@ -1793,11 +1793,14 @@ class mercadolibre_orders(models.Model):
         order_json = response.json()
         #_logger.info( order_json )
 
-        if "error" in order_json:
+        if "error" in order_json and meli.access_token!="PASIVA":
             _logger.error( order_json["error"] )
             _logger.error( order_json["message"] )
         else:
             try:
+                if meli.access_token=="PASIVA":
+                    order_json = None
+                                        
                 self.orders_update_order_json( {"id": order.id, "order_json": order_json }, meli=meli, config=config )
                 self._cr.commit()
             except Exception as e:
