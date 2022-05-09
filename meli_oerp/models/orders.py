@@ -1924,6 +1924,12 @@ class mercadolibre_orders(models.Model):
     date_closed = fields.Datetime('Closing date')
 
     order_items = fields.One2many('mercadolibre.order_items','order_id',string='Order Items' )
+
+    def _order_product( self ):
+        for ord in self:
+            ord.order_product = ord.order_items and ord.order_items[0].product_id
+    order_product = fields.Many2one('product.product',string='Order Items',compute=_order_product )
+
     payments = fields.One2many('mercadolibre.payments','order_id',string='Payments' )
     shipping = fields.Text(string="Shipping")
     shipping_id = fields.Char(string="Shipping id")
