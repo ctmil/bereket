@@ -715,10 +715,16 @@ class mercadolibre_orders(models.Model):
             return None
         meli_id = meli_item['id']
         meli_id_variation = ("variation_id" in meli_item and meli_item['variation_id'])
-        if (meli_id_variation):
-            product_related = product_obj.search([ ('meli_id','=',meli_id), ('meli_id_variation','=',meli_id_variation) ])
-        else:
-            product_related = product_obj.search([('meli_id','=', meli_id)])
+        meli_seller_sku = "seller_sku" in meli_item and meli_item["seller_sku"]
+        if meli_seller_sku:
+            product_related = product_obj.search([ ('default_code','=ilike',meli_seller_sku)])
+
+        if not product_related:
+            if (meli_id_variation):
+                product_related = product_obj.search([ ('meli_id','=',meli_id), ('meli_id_variation','=',meli_id_variation) ])
+            else:
+                product_related = product_obj.search([('meli_id','=', meli_id)])
+
         return product_related
 
     def update_partner_billing_info( self, partner_id, meli_buyer_fields, Receiver):
