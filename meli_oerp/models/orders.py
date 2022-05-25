@@ -600,6 +600,21 @@ class mercadolibre_orders(models.Model):
 
     def prepare_orderjson( self, meli=None, config=None ):
         ptags = (self.pack_order and "pack_order") or ""
+        order_items = []
+        for oitem in self.order_items:
+            order_items.append({
+                "item": {
+                    "id": oitem.order_item_id,
+                    "variation_id": oitem.order_item_variation_id,
+                    "title": oitem.order_item_title,
+                    "category_id": oitem.order_item_category_id,
+                    "unit_price": oitem.unit_price,
+                    "currency_id": oitem.currency_id,
+                    'quantity': oitem.quantity,
+                    'seller_sku': oitem.seller_sku,
+                    'seller_custom_field': oitem.seller_custom_field,
+                }
+            })
         orderjson = {
             "id": self.order_id,
             "status": self.status,
@@ -620,7 +635,8 @@ class mercadolibre_orders(models.Model):
             },
             "tags": [ptags],
             "currency_id": self.currency_id,
-            "shipping": None
+            "shipping": None,
+            "order_items": order_items
         }
         return orderjson
 
@@ -1435,7 +1451,7 @@ class mercadolibre_orders(models.Model):
             inmediate_or_not = ('mercadolibre_payment_term' in config._fields and config.mercadolibre_payment_term) or ('mercadolibre_payment_term' in company._fields and company.mercadolibre_payment_term) or None
             meli_order_fields["payment_term_id"] = (inmediate_or_not and inmediate_or_not.id)
 
-        if (order_json["shipping"]):
+        if ("shipping" in order_json and order_json["shipping"]):
             order_fields['shipping'] = self.pretty_json( id, order_json["shipping"] )
             meli_order_fields['meli_shipping'] = self.pretty_json( id, order_json["shipping"] )
             if ("cost" in order_json["shipping"]):
