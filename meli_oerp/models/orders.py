@@ -759,7 +759,7 @@ class mercadolibre_orders(models.Model):
 
         oid = data["id"]
         order_json = data["order_json"]
-        #_logger.info( "data:" + str(data) )
+        _logger.info( "data:" + str(data) )
         context = context or self.env.context
         #_logger.info( "context:" + str(context) )
         company = (config and "company_id" in config._fields and config.company_id) or self.env.user.company_id
@@ -792,6 +792,13 @@ class mercadolibre_orders(models.Model):
 
         order = None
         sorder = None
+
+        if meli.access_token=="PASIVA":
+            order_json = {
+                "id": oid,
+
+            }
+            _logger.info("order_json: "+str(order_json))
 
         order_fields = self.prepare_ml_order_vals( order_json=order_json, meli=meli, config=config )
 
@@ -1800,7 +1807,7 @@ class mercadolibre_orders(models.Model):
             try:
                 if meli.access_token=="PASIVA":
                     order_json = None
-                                        
+
                 self.orders_update_order_json( {"id": order.id, "order_json": order_json }, meli=meli, config=config )
                 self._cr.commit()
             except Exception as e:
