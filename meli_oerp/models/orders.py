@@ -608,12 +608,13 @@ class mercadolibre_orders(models.Model):
                     "variation_id": oitem.order_item_variation_id,
                     "title": oitem.order_item_title,
                     "category_id": oitem.order_item_category_id,
-                    "unit_price": oitem.unit_price,
-                    "currency_id": oitem.currency_id,
-                    'quantity': oitem.quantity,
                     'seller_sku': oitem.seller_sku,
                     'seller_custom_field': oitem.seller_custom_field,
-                }
+                },
+                "unit_price": oitem.unit_price,
+                "currency_id": oitem.currency_id,
+                'quantity': oitem.quantity,
+
             })
         orderjson = {
             "id": self.order_id,
