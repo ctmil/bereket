@@ -883,7 +883,7 @@ class mercadolibre_orders(models.Model):
         partner_shipping_id = False
 
         if not 'buyer' in order_json or not 'name' in order_json['buyer'] or not 'first_name' in order_json['buyer']:
-            #_logger.info("Buyer not present, fetch order")
+            _logger.info("Buyer not present, fetch order")
             response = meli.get("/orders/"+str(order_json['id']), {'access_token':meli.access_token})
             order_json = response.json()
             #_logger.info(order_json)
