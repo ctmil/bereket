@@ -898,7 +898,7 @@ class mercadolibre_orders(models.Model):
             Buyer['last_name'] = ('last_name' in Buyer and Buyer['last_name']) or ('LAST_NAME' in Buyer['billing_info'] and Buyer['billing_info']['LAST_NAME']) or ''
             Buyer['business_name'] = ('business_name' in Buyer and Buyer['business_name']) or ('BUSINESS_NAME' in Buyer['billing_info'] and Buyer['billing_info']['BUSINESS_NAME']) or ''
             Receiver = False
-            if ('shipping' in order_json):
+            if ('shipping' in order_json and order_json['shipping']):
                 if ('receiver_address' in order_json['shipping']):
                     Receiver = order_json['shipping']['receiver_address']
                 elif ('id' in order_json['shipping']):
