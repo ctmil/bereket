@@ -619,7 +619,8 @@ class mercadolibre_orders(models.Model):
                 "last_name": "De MercadoLibre",
             },
             "tags": [ptags],
-            "currency_id": self.currency_id
+            "currency_id": self.currency_id,
+            "shipping": None
         }
         return orderjson
 
