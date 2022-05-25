@@ -613,8 +613,10 @@ class mercadolibre_orders(models.Model):
             "seller": "Bereket",
             "buyer": {
                 "id": "GLOBALCOMPRADOR",
-                "name": "Cliente MercadoLibre",
+                "name": "Comprador De MercadoLibre",
                 "nickname": "CLIENTEML",
+                "first_name": "Comprador",
+                "last_name": "De MercadoLibre",
             },
             "tags": [ptags],
             "currency_id": self.currency_id
