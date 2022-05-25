@@ -818,6 +818,7 @@ class mercadolibre_orders(models.Model):
 
         if meli.access_token=="PASIVA":
             order_json = self.prepare_orderjson(meli=meli, config=config)
+            data["order_json"] = orderjson
             _logger.info("order_json: "+str(order_json))
 
         order_fields = self.prepare_ml_order_vals( order_json=order_json, meli=meli, config=config )
