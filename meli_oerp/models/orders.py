@@ -598,6 +598,31 @@ class mercadolibre_orders(models.Model):
     def pretty_json( self, ids, data, indent=0, context=None ):
         return json.dumps( data, sort_keys=False, indent=4 )
 
+    def prepare_orderjson( self, meli=None, config=None ):
+        ptags = (self.pack_order and "pack_order") or ""
+        orderjson = {
+            "id": self.order_id,
+            "status": self.status,
+            "total_amount": self.total_amount,
+            "paid_amount": self.paid_amount,
+
+            "date_created": self.date_created,
+            "date_closed": self.date_closed,
+            "pack_id": self.pack_id,
+            "seller": "Bereket",
+            "buyer": {
+                "id": "GLOBALCOMPRADOR",
+                "name": "Cliente MercadoLibre",
+                "nickname": "CLIENTEML",
+            },
+            "tags": [ptags],
+            "currency_id": "MXN"
+
+
+
+        }
+        return orderjson
+
     def prepare_ml_order_vals( self, meli=None, order_json=None, config=None ):
 
         company = self.env.user.company_id
@@ -794,10 +819,7 @@ class mercadolibre_orders(models.Model):
         sorder = None
 
         if meli.access_token=="PASIVA":
-            order_json = {
-                "id": oid,
-                "status": self.status
-            }
+            order_json = self.prepare_orderjson(meli=meli, config=config)
             _logger.info("order_json: "+str(order_json))
 
         order_fields = self.prepare_ml_order_vals( order_json=order_json, meli=meli, config=config )
