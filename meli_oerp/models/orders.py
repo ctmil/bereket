@@ -796,7 +796,7 @@ class mercadolibre_orders(models.Model):
         if meli.access_token=="PASIVA":
             order_json = {
                 "id": oid,
-
+                "status": self.status
             }
             _logger.info("order_json: "+str(order_json))
 
