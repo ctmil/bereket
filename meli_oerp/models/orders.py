@@ -603,6 +603,7 @@ class mercadolibre_orders(models.Model):
         orderjson = {
             "id": self.order_id,
             "status": self.status,
+            "status_detail": self.status_detail,
             "total_amount": self.total_amount,
             "paid_amount": self.paid_amount,
 
@@ -616,10 +617,7 @@ class mercadolibre_orders(models.Model):
                 "nickname": "CLIENTEML",
             },
             "tags": [ptags],
-            "currency_id": "MXN"
-
-
-
+            "currency_id": self.currency_id
         }
         return orderjson
 
