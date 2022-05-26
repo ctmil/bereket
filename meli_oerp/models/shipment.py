@@ -694,7 +694,8 @@ class mercadolibre_shipment(models.Model):
                     for oitem in oitems:
                         itemjson = {
                             "order_id": oitem.order_id,
-                            "id": oitem.id
+                            "id": oitem.id,
+                            "item_id": oitem.order_items and oitem.order_items[0].order_item_id,
                         }
                         items_json.append(itemjson)
                 else:        
