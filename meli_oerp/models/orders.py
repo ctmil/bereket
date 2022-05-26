@@ -1465,9 +1465,14 @@ class mercadolibre_orders(models.Model):
         if ("shipping" in order_json and order_json["shipping"]):
             order_fields['shipping'] = self.pretty_json( id, order_json["shipping"] )
             meli_order_fields['meli_shipping'] = self.pretty_json( id, order_json["shipping"] )
+            
+            if ("logistic_type" in order_json["shipping"]):
+                order_fields['shipment_logistic_type'] = order_json["shipping"]["logistic_type"]
+
             if ("cost" in order_json["shipping"]):
-                order_json["shipping_cost"] = float(order_json["shipping"]["cost"])
+                order_fields["shipping_cost"] = float(order_json["shipping"]["cost"])
                 meli_order_fields["meli_shipping_cost"] = float(order_json["shipping"]["cost"])
+
             if ("id" in order_json["shipping"]):
                 order_fields['shipping_id'] = order_json["shipping"]["id"]
                 meli_order_fields['meli_shipping_id'] = order_json["shipping"]["id"]

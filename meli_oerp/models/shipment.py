@@ -566,9 +566,34 @@ class mercadolibre_shipment(models.Model):
         else:
             return None
 
-        response = meli.get("/shipments/"+ str(ship_id),  {'access_token':meli.access_token})
+        if meli.access_token=="PASIVA":
+            ship_json = {
+                "id": ship_id,
+                "logistic_type": order.shipment_logistic_type,
+                "order_cost": 0,
+                "base_cost": 0,
+                "date_created": "",
+                "last_updated": "",
+                "site_id": "MLM",
+                "order_id": order.order_id,
+                "mode": "custom",
+                "shipping_option": {
+                    "name": "custom",                                
+                },
+                "status": "undefined",
+                "substatus": "undefined",
+                "tracking_number": "XXXX",
+                "tracking_method": "MMMM",
+                "comments": "",
+                "date_first_printed": "",
+                "receiver_id": "ZZZ",
+                "sender_id": "ZZZ",
+            }
+            response = True
+        else:
+            response = meli.get("/shipments/"+ str(ship_id),  {'access_token':meli.access_token})
         if (response):
-            ship_json = response.json()
+            ship_json = ship_json or response.json()
             #_logger.info( ship_json )
 
             if "error" in ship_json:
@@ -576,9 +601,16 @@ class mercadolibre_shipment(models.Model):
                 _logger.error( ship_json["message"] )
             else:
                 #_logger.info("Saving shipment fields")
-                rescosts = meli.get("/shipments/"+ str(ship_id)+str('/costs'),  {'access_token':meli.access_token})
+                rcosts = None
+                if meli.access_token=="PASIVA":
+                    rcosts = {
+                            
+                    }
+                    rescosts = True
+                else:
+                    rescosts = meli.get("/shipments/"+ str(ship_id)+str('/costs'),  {'access_token':meli.access_token})
                 if rescosts:
-                    rcosts = rescosts.json()
+                    rcosts = rcosts or rescosts.json()
                     ship_json['costs'] = rcosts
                     recdiscounts = 'receiver' in rcosts and 'discounts' in rcosts['receiver'] and rcosts['receiver']['discounts']
                     for discount in recdiscounts:
@@ -652,10 +684,23 @@ class mercadolibre_shipment(models.Model):
                         "sender_longitude": ship_json["sender_address"]["longitude"],
                     });
 
-                response2 = meli.get("/shipments/"+ str(ship_id)+"/items",  {'access_token':meli.access_token})
                 items_json = []
+                
+                if meli.access_token=="PASIVA":
+                    response2 = True
+                    #buscar las ordenes asociadas al pack_id
+                    oitems = self.env["mercadolibre.orders"].search([("pack_id","=",order.pack_id)])
+                    for oitem in oitems:
+                        itemjson = {
+                            "order_id": oitem.order_id,
+                            "id": oitem.id
+                        }
+                        items_json.append(itemjson)
+                        
+                response2 = meli.get("/shipments/"+ str(ship_id)+"/items",  {'access_token':meli.access_token})
+                
                 if (response2):
-                    items_json = response2.json()
+                    items_json = items_json or response2.json()
                     if "error" in items_json:
                         _logger.error( items_json["error"] )
                         _logger.error( items_json["message"] )
