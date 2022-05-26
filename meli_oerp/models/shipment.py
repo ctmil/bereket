@@ -540,7 +540,7 @@ class mercadolibre_shipment(models.Model):
 
     #Return shipment object based on mercadolibre.orders "order"
     def fetch( self, order, meli=None, config=None ):
-
+        _logger.info("ship fetch")
         company = self.env.user.company_id
         if not config:
             config = company
