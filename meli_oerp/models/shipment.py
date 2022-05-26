@@ -613,9 +613,10 @@ class mercadolibre_shipment(models.Model):
                     rcosts = rcosts or rescosts.json()
                     ship_json['costs'] = rcosts
                     recdiscounts = 'receiver' in rcosts and 'discounts' in rcosts['receiver'] and rcosts['receiver']['discounts']
-                    for discount in recdiscounts:
-                        if 'promoted_amount' in discount:
-                            ship_json['promoted_amount'] =  discount['promoted_amount'] or 0.0
+                    if recdiscounts:
+                        for discount in recdiscounts:
+                            if 'promoted_amount' in discount:
+                                ship_json['promoted_amount'] =  discount['promoted_amount'] or 0.0
 
                 seller_id = None
                 if config.mercadolibre_seller_user:
