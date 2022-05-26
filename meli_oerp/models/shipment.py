@@ -755,8 +755,9 @@ class mercadolibre_shipment(models.Model):
 
                 if shipment and items_json:
                     #mercadolibre.shipment.item
-                    for item in items_json:
-                        shipment.update_item(item)
+                    _logger.info("items_json: "+str(items_json))
+                    #for item in items_json:
+                    #    shipment.update_item(item)
 
                 try:
                     #_logger.info("ships.pdf_filename:")
