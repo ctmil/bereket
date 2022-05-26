@@ -586,7 +586,7 @@ class mercadolibre_shipment(models.Model):
                 "tracking_method": "MMMM",
                 "comments": "",
                 "date_first_printed": "",
-                "receiver_id": "ZZZ",
+                "receiver_id": "GLOBALCOMPRADOR",
                 "sender_id": "ZZZ",
             }
             response = True
@@ -796,6 +796,8 @@ class mercadolibre_shipment(models.Model):
                         sorder.meli_shipment = shipment
 
                 #if its a pack order, create it, oif full_orders were fetched (we can force this now)
+                _logger.info("full_orders:"+str(full_orders))
+                _logger.info("all_orders:"+str(all_orders))
                 if (full_orders and ship_fields["pack_order"]):
                     plistid = None
                     if config.mercadolibre_pricelist:
@@ -931,7 +933,8 @@ class mercadolibre_shipment(models.Model):
                                     saleorderline_item_ids = saleorderline_obj.create( ( saleorderline_item_fields ))
                                 else:
                                     saleorderline_item_ids.write( ( saleorderline_item_fields ) )
-
+                    else:
+                        _logger.info("partner receiver id not founded:"+str(ship_fields['receiver_id']))
 
         if (shipment):
             shipment._update_sale_order_shipping_info( order, meli=meli, config=config )
