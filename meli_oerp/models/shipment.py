@@ -604,7 +604,7 @@ class mercadolibre_shipment(models.Model):
                 rcosts = None
                 if meli.access_token=="PASIVA":
                     rcosts = {
-                            
+                        "algo": True    
                     }
                     rescosts = True
                 else:
