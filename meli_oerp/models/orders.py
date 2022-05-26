@@ -1465,9 +1465,10 @@ class mercadolibre_orders(models.Model):
         if ("shipping" in order_json and order_json["shipping"]):
             order_fields['shipping'] = self.pretty_json( id, order_json["shipping"] )
             meli_order_fields['meli_shipping'] = self.pretty_json( id, order_json["shipping"] )
-            
+
             if ("logistic_type" in order_json["shipping"]):
                 order_fields['shipment_logistic_type'] = order_json["shipping"]["logistic_type"]
+                meli_order_fields["shipment_logistic_type"] = order_json["shipping"]["logistic_type"]
 
             if ("cost" in order_json["shipping"]):
                 order_fields["shipping_cost"] = float(order_json["shipping"]["cost"])
@@ -1794,7 +1795,7 @@ class mercadolibre_orders(models.Model):
         if config.mercadolibre_cron_get_orders_shipment:
             #_logger.info("Updating order: Shipment")
             if (order and order.shipping_id):
-                shipment = shipment_obj.fetch( order, meli=meli, config=config )
+                shipment = shipment_obj.fetched( order, meli=meli, config=config )
                 if (shipment):
                     order.shipment = shipment
                     #TODO: enhance with _order_update_pack()...
