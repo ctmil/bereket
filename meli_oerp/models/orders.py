@@ -1468,7 +1468,7 @@ class mercadolibre_orders(models.Model):
 
             if ("logistic_type" in order_json["shipping"]):
                 order_fields['shipment_logistic_type'] = order_json["shipping"]["logistic_type"]
-                meli_order_fields["shipment_logistic_type"] = order_json["shipping"]["logistic_type"]
+                meli_order_fields["meli_shipment_logistic_type"] = order_json["shipping"]["logistic_type"]
 
             if ("cost" in order_json["shipping"]):
                 order_fields["shipping_cost"] = float(order_json["shipping"]["cost"])
