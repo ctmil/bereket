@@ -637,6 +637,7 @@ class mercadolibre_orders(models.Model):
             "tags": [ptags],
             "currency_id": self.currency_id,
             "shipping": {
+                "id": "SHP-"+str(self.pack_id or self.order_id),
                 "cost": self.shipping_cost,
                 "logistic_type": "fulfillment"
             },
