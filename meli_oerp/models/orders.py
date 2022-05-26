@@ -636,7 +636,10 @@ class mercadolibre_orders(models.Model):
             },
             "tags": [ptags],
             "currency_id": self.currency_id,
-            "shipping": None,
+            "shipping": {
+                "cost": self.shipping_cost,
+                "logistic_type": "fulfillment"
+            },
             "order_items": order_items
         }
         return orderjson
