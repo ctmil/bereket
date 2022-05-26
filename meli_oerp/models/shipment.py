@@ -721,7 +721,7 @@ class mercadolibre_shipment(models.Model):
                         coma = ""
                         packed_order_ids =""
                         items_json_sorted = sorted(items_json, key=lambda x: x["order_id"], reverse=False)
-                        #_logger.info("items_json_sorted:"+str(items_json_sorted))
+                        _logger.info("items_json_sorted:"+str(items_json_sorted))
                         for item in items_json_sorted:
                             #check mercadolibre_orders for full pack
                             if "order_id" in item:
@@ -735,8 +735,8 @@ class mercadolibre_shipment(models.Model):
                                     packed_order_ids+= coma + item["order_id"]
                                     coma = ","
                         full_orders = ( len(items_json) == len(all_orders) )
-                        #_logger.info(items_json)
-                        #_logger.info("full_orders:"+str(full_orders))
+                        _logger.info(items_json)
+                        _logger.info("full_orders:"+str(full_orders))
                         if (full_orders):
                             #We can create order with all items now
                             ship_fields["orders"] = [(6, 0, all_orders_ids)]
@@ -744,13 +744,13 @@ class mercadolibre_shipment(models.Model):
                 shipment = shipment_obj.search([('shipping_id','=', ship_id)])
                 #_logger.info(ships)
                 if (len(shipment)==0):
-                    #_logger.info("Importing shipment: " + str(ship_id))
+                    _logger.info("Importing shipment: " + str(ship_id))
                     #_logger.info(str(ship_fields))
                     shipment = shipment_obj.create((ship_fields))
                     if (shipment):
                         _logger.info("Created shipment ok!")
                 else:
-                    #_logger.info("Updating shipment: " + str(ship_id))
+                    _logger.info("Updating shipment: " + str(ship_id))
                     shipment.write((ship_fields))
 
                 if shipment and items_json:
@@ -761,7 +761,7 @@ class mercadolibre_shipment(models.Model):
                 try:
                     #_logger.info("ships.pdf_filename:")
                     #_logger.info(shipment.pdf_filename)
-                    if (1==1 and shipment.pdf_filename):
+                    if (1==2 and shipment.pdf_filename):
                         #_logger.info("We have a pdf file")
                         if (shipment.pdfimage_filename==False):
                             #_logger.info("Try create a pdf image file")
@@ -940,6 +940,7 @@ class mercadolibre_shipment(models.Model):
     def update_item( self, item=None ):
         shipment = self
         sitem = None
+        _logger.info("update shipment:"+str(item))
         if "variation_id" in item and item["variation_id"]:
             sitem = self.env["mercadolibre.shipment.item"].search([ ("shipment_id","=",shipment.id),("order_id","=",item["order_id"]), ("item_id","=",item["item_id"]), ("variation_id","=",item["variation_id"]) ],limit=1)
         else:
@@ -953,7 +954,7 @@ class mercadolibre_shipment(models.Model):
             "shipment_id": shipment.id,
             "data": str(item)
         }
-
+        _logger.info("update shipment ifields:"+str(ifields))
         if sitem:
             sitem.write(ifields)
         else:
