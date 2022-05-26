@@ -862,7 +862,9 @@ class mercadolibre_shipment(models.Model):
                         })
                         #TODO: agregar un campo para diferencia cada delivery res partner al shipment y orden asociado, crear un binding usando values diferentes... y listo
                         #_logger.info("ship_json[receiver_address]:"+str(ship_json["receiver_address"]) )
-                        partner_shipping_id = self.partner_delivery_id( partner_id=partner_id, Receiver=ship_json["receiver_address"])
+                        partner_shipping_id = None
+                        if "receiver_address" in ship_json:
+                            partner_shipping_id = self.partner_delivery_id( partner_id=partner_id, Receiver=ship_json["receiver_address"])
 
                         if partner_shipping_id:
                             meli_order_fields['partner_shipping_id'] = partner_shipping_id.id
