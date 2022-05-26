@@ -689,10 +689,11 @@ class mercadolibre_shipment(models.Model):
                 
                 if meli.access_token=="PASIVA":
                     response2 = True
+                    oitems = order
                     #buscar las ordenes asociadas al pack_id
                     if order.pack_id:
                         oitems = self.env["mercadolibre.orders"].search([("pack_id","=",order.pack_id)])
-                    oitems = order
+
                     for oitem in oitems:
                         itemjson = {
                             "order_id": oitem.order_id,
