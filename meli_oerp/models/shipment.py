@@ -696,8 +696,8 @@ class mercadolibre_shipment(models.Model):
                             "id": oitem.id
                         }
                         items_json.append(itemjson)
-                        
-                response2 = meli.get("/shipments/"+ str(ship_id)+"/items",  {'access_token':meli.access_token})
+                else:        
+                    response2 = meli.get("/shipments/"+ str(ship_id)+"/items",  {'access_token':meli.access_token})
                 
                 if (response2):
                     items_json = items_json or response2.json()
