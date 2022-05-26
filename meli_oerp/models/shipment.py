@@ -696,6 +696,8 @@ class mercadolibre_shipment(models.Model):
                             "order_id": oitem.order_id,
                             "id": oitem.id,
                             "item_id": oitem.order_items and oitem.order_items[0].order_item_id,
+                            "description": oitem.order_items and oitem.order_items[0].posting_id.name,
+                            "variation_id": oitem.order_items and oitem.order_items[0].seller_sku,
                         }
                         items_json.append(itemjson)
                 else:        

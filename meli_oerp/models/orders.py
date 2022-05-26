@@ -605,7 +605,7 @@ class mercadolibre_orders(models.Model):
             order_items.append({
                 "item": {
                     "id": oitem.order_item_id,
-                    "variation_id": oitem.order_item_variation_id,
+                    "variation_id": oitem.order_item_variation_id or oitem.seller_sku,
                     "title": oitem.order_item_title,
                     "category_id": oitem.order_item_category_id,
                     'seller_sku': oitem.seller_sku,
