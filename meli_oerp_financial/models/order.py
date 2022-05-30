@@ -126,7 +126,7 @@ class SaleOrder(models.Model):
                     product_fea = self.env["product.product"].search( ['|','|',('default_code','ilike','COMISION_ML'),('default_code','ilike','COMISIONML'),('default_code','ilike','COMISION ML')], limit=1 )
 
                 if not product_fea:
-                    break;
+                    return
 
                 com_name = ((product_fea and product_fea.display_name) or "COMISION ")
                 #com_name+=  str(" ")+ str(meli_order_item_id)
@@ -156,7 +156,7 @@ class SaleOrder(models.Model):
                     saleorderline_item_ids.sudo().write( ( saleorderline_item_fields ) )
 
                 if sorder.meli_shipping_list_cost:
-                    
+
                     delivery_line = get_delivery_line( sorder )
                     if delivery_line:
                         delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
