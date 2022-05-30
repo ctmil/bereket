@@ -45,7 +45,7 @@ class SaleOrder(models.Model):
 
     def confirm_ml_financial( self, meli=None, config=None, force=False ):
 
-        #_logger.info("meli_oerp_financial confirm_ml_financial config:"+str(config and config.name))
+        _logger.info("meli_oerp_financial confirm_ml_financial config:"+str(config and config.name))
         company = (config and 'company_id' in config._fields and config.company_id) or self.env.user.company_id
         config = config or company
 
@@ -115,7 +115,7 @@ class SaleOrder(models.Model):
     #try to update order before confirmation (quotation)
     def confirm_ml( self, meli=None, config=None ):
 
-        #_logger.info("meli_oerp_financial confirm_ml: config:"+str(config and config.name))
+        _logger.info("meli_oerp_financial confirm_ml: config:"+str(config and config.name))
 
         company = (config and 'company_id' in config._fields and config.company_id) or self.env.user.company_id
         config = config or company
