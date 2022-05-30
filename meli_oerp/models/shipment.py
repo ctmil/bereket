@@ -738,6 +738,11 @@ class mercadolibre_shipment(models.Model):
                                     packed_order_ids+= coma + item["order_id"]
                                     coma = ","
                         full_orders = ( len(items_json) == len(all_orders) )
+                        for ordi in all_orders:
+                            if (ordi.order_id==ordi.name):
+                                full_orders = False
+                                break;
+                                
                         _logger.info(items_json)
                         _logger.info("full_orders:"+str(full_orders))
                         if (full_orders):
