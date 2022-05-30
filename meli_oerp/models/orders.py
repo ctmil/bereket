@@ -682,6 +682,12 @@ class mercadolibre_orders(models.Model):
             if 'catalog' in order_json["tags"]:
                 order_fields["catalog_order"] = True
                 #debemos buscar el codigo relacionado pero al producto real del catalogo: que se encuentra.
+
+        if meli.access_token=="PASIVA":
+            if (self):
+                order_fields["fee_amount"] = self.payments and self.payments[0].fee_amount
+                if (self.sale_order):
+                    self.sale_order.meli_fee_amount = order_fields["fee_amount"]
         return order_fields
 
     def prepare_sale_order_vals( self, meli=None, order_json=None, config=None, sale_order=None, shipment=None ):
