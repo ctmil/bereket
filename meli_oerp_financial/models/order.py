@@ -113,7 +113,7 @@ class SaleOrder(models.Model):
                 morder = sorder.meli_orders[0]
                 #_logger.info("meli_oerp_financial confirm_ml_financial morder:"+str(morder and morder.name))
                 order_item = morder.order_items and morder.order_items[0]
-                order_item_id = (order_item.pack_id) or (order_item and order_item.order_item_id) or ""
+                order_item_id = (morder.pack_id) or (order_item and order_item.order_item_id) or ""
                 order_item_variation_id = ""
 
                 meli_order_item_id = str("FEA ")+str(order_item_id)
