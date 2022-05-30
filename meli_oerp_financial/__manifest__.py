@@ -13,10 +13,10 @@
     'author': 'Moldeo Interactive',
     'website': 'https://www.moldeointeractive.com',
     "category": "Sales",
-    "depends": ['base','meli_oerp','meli_oerp_multiple'],
+    "depends": ['base','meli_oerp'],
     'data': [
         'views/company_view.xml',
-        'views/configuration_view.xml',
+        #'views/configuration_view.xml',
         'views/financial_view.xml',
     ],
     'demo': [

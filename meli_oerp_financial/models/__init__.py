@@ -7,6 +7,6 @@
 ##############################################################################
 
 from . import company
-from . import configuration
+#from . import configuration
 from . import product
 from . import order
