@@ -156,6 +156,7 @@ class SaleOrder(models.Model):
                     saleorderline_item_ids.sudo().write( ( saleorderline_item_fields ) )
 
                 if sorder.meli_shipping_list_cost:
+                    
                     delivery_line = get_delivery_line( sorder )
                     if delivery_line:
                         delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
