@@ -108,7 +108,57 @@ class SaleOrder(models.Model):
                     if delivery_line:
                         delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
 
+            if "grouped" in config.mercadolibre_order_add_fea:
 
+                morder = sorder.meli_orders[0]
+                #_logger.info("meli_oerp_financial confirm_ml_financial morder:"+str(morder and morder.name))
+                order_item = morder.order_items and morder.order_items[0]
+                order_item_id = (order_item.pack_id) or (order_item and order_item.order_item_id) or ""
+                order_item_variation_id = ""
+
+                meli_order_item_id = str("FEA ")+str(order_item_id)
+                meli_order_item_variation_id = str("FEA ")+str(order_item_variation_id)
+                fea_amount = morder.fee_amount
+
+                product_fea = "mercadolibre_product_fea" in config and config.mercadolibre_product_fea
+
+                if not product_fea:
+                    product_fea = self.env["product.product"].search( ['|','|',('default_code','ilike','COMISION_ML'),('default_code','ilike','COMISIONML'),('default_code','ilike','COMISION ML')], limit=1 )
+
+                if not product_fea:
+                    break;
+
+                com_name = ((product_fea and product_fea.display_name) or "COMISION ")
+                #com_name+=  str(" ")+ str(meli_order_item_id)
+                com_name+= str(" ") + str(sorder.name)
+
+                saleorderline_item_fields = {
+                    'company_id': company.id,
+                    'order_id': sorder.id,
+                    'meli_order_item_id': meli_order_item_id,
+                    'meli_order_item_variation_id': meli_order_item_variation_id,
+                    'purchase_price': float(fea_amount),
+                    'price_unit': float(0.0),
+                    'product_id': (product_fea and product_fea.id),
+                    'product_uom_qty': 1.0,
+                    'product_uom': (product_fea and product_fea.uom_id.id),
+                    'name': com_name,
+                }
+                #saleorderline_item_fields.update( self._set_product_unit_price( product_related_obj=product_related_obj, Item=Item, config=config ) )
+
+                saleorderline_item_ids = saleorderline_obj.search( [('meli_order_item_id','=',meli_order_item_id),
+                                                                    ('meli_order_item_variation_id','=',meli_order_item_variation_id),
+                                                                    ('order_id','=',sorder.id)] )
+
+                if not saleorderline_item_ids:
+                    saleorderline_item_ids = saleorderline_obj.sudo().create( ( saleorderline_item_fields ))
+                else:
+                    saleorderline_item_ids.sudo().write( ( saleorderline_item_fields ) )
+
+                if sorder.meli_shipping_list_cost:
+                    delivery_line = get_delivery_line( sorder )
+                    if delivery_line:
+                        delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
 
         #_logger.info("meli_oerp_financial confirm_ml_financial ended")
 
