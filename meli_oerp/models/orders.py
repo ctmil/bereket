@@ -1835,6 +1835,10 @@ class mercadolibre_orders(models.Model):
 
             #if "confirm_ml_financial" in self.env["mercadolibre.orders"]:
             sorder.confirm_ml_financial( meli=meli, config=config )
+
+            if meli.access_token=="PASIVA":
+                if (sorder):
+                    sorder.meli_fee_amount = order_fields["fee_amount"]
         try:
             self.orders_get_invoice()
         except:
