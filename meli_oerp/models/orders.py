@@ -297,6 +297,9 @@ class sale_order(models.Model):
                     _logger.info("Confirm Order Cancelled")
                 return res
 
+            #if "confirm_ml_financial" in self.env["mercadolibre.orders"]:
+            self.confirm_ml_financial( meli=meli, config=config )
+
             amount_to_invoice = self.meli_amount_to_invoice( meli=meli, config=config )
             confirm_cond = (amount_to_invoice > 0) and abs( float(amount_to_invoice) - self.amount_total ) < 1.1
             if not confirm_cond:
