@@ -434,10 +434,10 @@ class mercadolibre_shipment(models.Model):
                 #delivery_price = vals['price']
                 #display_price = vals['carrier_price']
                 set_delivery_line(sorder, delivery_price, delivery_message )
-                
+
             if (sorder.carrier_id and delivery_price<=0.0):
                 sorder._remove_delivery_line()
-                
+
 
             #REMOVE OLD SALE ORDER ITEM SHIPPING ITEM
             saleorderline_item_fields = {
@@ -578,7 +578,9 @@ class mercadolibre_shipment(models.Model):
                 "order_id": order.order_id,
                 "mode": "custom",
                 "shipping_option": {
-                    "name": "custom",                                
+                    "name": "custom",
+                    "cost": order.shipping_cost,
+                    "list_cost": order.shipping_list_cost,
                 },
                 "status": "undefined",
                 "substatus": "undefined",
@@ -604,7 +606,7 @@ class mercadolibre_shipment(models.Model):
                 rcosts = None
                 if meli.access_token=="PASIVA":
                     rcosts = {
-                        "algo": True    
+                        "algo": True
                     }
                     rescosts = True
                 else:
@@ -686,7 +688,7 @@ class mercadolibre_shipment(models.Model):
                     });
 
                 items_json = []
-                
+
                 if meli.access_token=="PASIVA":
                     response2 = True
                     oitems = order
@@ -703,9 +705,9 @@ class mercadolibre_shipment(models.Model):
                             "variation_id": oitem.order_items and oitem.order_items[0].seller_sku,
                         }
                         items_json.append(itemjson)
-                else:        
+                else:
                     response2 = meli.get("/shipments/"+ str(ship_id)+"/items",  {'access_token':meli.access_token})
-                
+
                 if (response2):
                     items_json = items_json or response2.json()
                     if "error" in items_json:
@@ -742,7 +744,7 @@ class mercadolibre_shipment(models.Model):
                             if (ordi.order_id==ordi.name):
                                 full_orders = False
                                 break;
-                                
+
                         _logger.info(items_json)
                         _logger.info("full_orders:"+str(full_orders))
                         if (full_orders):
