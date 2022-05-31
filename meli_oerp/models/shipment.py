@@ -390,7 +390,7 @@ class mercadolibre_shipment(models.Model):
                 _logger.info('MEL Distribution, not adding to order')
                 #continue
 
-            del_price = shipment.shipping_cost
+            del_price = shipment.shipping_cost or shipment.shipping_list_cost
             delivery_price = ml_product_price_conversion( self, product_related_obj=product_shipping_id, price=del_price, config=config ),
             if type(delivery_price)==tuple and len(delivery_price):
                 delivery_price = delivery_price[0]
