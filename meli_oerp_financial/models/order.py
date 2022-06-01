@@ -167,6 +167,15 @@ class SaleOrder(models.Model):
                             delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
 
         #_logger.info("meli_oerp_financial confirm_ml_financial ended")
+        #costs for products
+        for oline in sorder.order_line:
+            if oline.meli_order_item_id:
+                pp = oline.product_id
+                if "variant_seller_ids" in pp._fields:
+                    costs = pp.variant_seller_ids and pp.variant_seller_ids[0] and pp.variant_seller_ids[0].price
+                    if costs:
+                        oline.sudo().write({'purchase_price': float(costs) } )
+
 
     #try to update order before confirmation (quotation)
     def confirm_ml( self, meli=None, config=None ):
