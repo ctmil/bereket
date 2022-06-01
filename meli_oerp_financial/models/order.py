@@ -155,16 +155,21 @@ class SaleOrder(models.Model):
                 else:
                     saleorderline_item_ids.sudo().write( ( saleorderline_item_fields ) )
 
-                if sorder.meli_shipping_list_cost:
 
-                    delivery_line = get_delivery_line( sorder )
-                    if delivery_line:
-                        delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
-                    else:
-                        set_delivery_line(sorder, 0.0, "costo de envío" )
+                if sorder.meli_shipping_list_cost:
+                    try:
+                        _logger.info("carrier: "+str(sorder.carrier_id and sorder.carrier_id.name))
                         delivery_line = get_delivery_line( sorder )
                         if delivery_line:
                             delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
+                        else:
+                            set_delivery_line(sorder, 0.0, "costo de envío" )
+                            delivery_line = get_delivery_line( sorder )
+                            if delivery_line:
+                                delivery_line.sudo().write({'purchase_price': float(sorder.meli_shipping_list_cost) } )
+                    except Exception as E:
+                        _logger.error(E, exc_info=True)
+                        pass;
 
         #_logger.info("meli_oerp_financial confirm_ml_financial ended")
         #costs for products
