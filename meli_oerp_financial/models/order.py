@@ -178,7 +178,7 @@ class SaleOrder(models.Model):
             if oline.meli_order_item_id:
                 pp = oline.product_id
                 _logger.info("updating purchase price product_id: "+str(oline.product_id))
-                if "variant_seller_ids" in pp._fields:
+                if pp and pp["variant_seller_ids"]:
                     costs = pp.variant_seller_ids and pp.variant_seller_ids[0] and pp.variant_seller_ids[0].price
                     _logger.info("updating purchase price product_id purchase_price: "+str(costs))
                     if costs:
