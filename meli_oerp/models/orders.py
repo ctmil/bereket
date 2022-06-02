@@ -729,12 +729,11 @@ class mercadolibre_orders(models.Model):
         meli_seller_sku = "seller_sku" in meli_item and meli_item["seller_sku"]
         if meli_seller_sku:
             product_related = product_obj.search([ ('default_code','=ilike',meli_seller_sku)])
-
-        if not product_related:
             #search by barcode
-            if meli_seller_sku:
+            if ((not product_related) or len(product_related)>1):
                 product_related = product_obj.search([ ('barcode','=ilike',meli_seller_sku)])
 
+        if ((not product_related) or len(product_related)>1):
             if (meli_id_variation):
                 product_related = product_obj.search([ ('meli_id','=',meli_id), ('meli_id_variation','=',meli_id_variation) ])
             else:
