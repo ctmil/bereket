@@ -720,6 +720,7 @@ class mercadolibre_orders(models.Model):
         return mlorder
 
     def search_meli_product( self, meli=None, meli_item=None, config=None ):
+        product_related = False
         product_obj = self.env['product.product']
         if not meli_item:
             return None
@@ -730,6 +731,10 @@ class mercadolibre_orders(models.Model):
             product_related = product_obj.search([ ('default_code','=ilike',meli_seller_sku)])
 
         if not product_related:
+            #search by barcode
+            if meli_seller_sku:
+                product_related = product_obj.search([ ('barcode','=ilike',meli_seller_sku)])
+
             if (meli_id_variation):
                 product_related = product_obj.search([ ('meli_id','=',meli_id), ('meli_id_variation','=',meli_id_variation) ])
             else:
