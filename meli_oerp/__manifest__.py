@@ -13,7 +13,8 @@
     'author': 'Moldeo Interactive',
     'website': 'https://www.moldeointeractive.com',
     "category": "Sales",
-    "depends": ['base', 'product','sale_management','website_sale','stock','delivery'],
+    #"depends": ['base', 'product','sale_management','website_sale','stock','delivery'],
+    "depends": ['base', 'product','sale_management','stock','delivery'],
     'data': [
         'security/meli_oerp_security.xml',
         'security/ir.model.access.csv',

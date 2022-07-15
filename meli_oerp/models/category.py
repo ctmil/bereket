@@ -81,13 +81,13 @@ class mercadolibre_category_import(models.TransientModel):
 
 mercadolibre_category_import()
 
-class product_public_category(models.Model):
+#class product_public_category(models.Model):
 
-    _inherit="product.public.category"
+#    _inherit="product.public.category"
 
-    mercadolibre_category = fields.Many2one( "mercadolibre.category", string="Mercado Libre Category")
+#    mercadolibre_category = fields.Many2one( "mercadolibre.category", string="Mercado Libre Category")
 
-product_public_category()
+#product_public_category()
 
 
 class mercadolibre_category_attribute(models.Model):
@@ -481,8 +481,8 @@ class mercadolibre_category(models.Model):
     meli_father_category = fields.Many2one('mercadolibre.category',string="Padre",index=True)
     meli_father_category_id = fields.Char(string='Father ML Id',compute=_get_category_url,index=True)
     public_category_id = fields.Integer(string='Public Category Id',index=True)
-    public_category = fields.Many2one('product.public.category',string='Public Category')
-    public_categories = fields.One2many('product.public.category','mercadolibre_category',string='Public Categories')
+    #public_category = fields.Many2one('product.public.category',string='Public Category')
+    #public_categories = fields.One2many('product.public.category','mercadolibre_category',string='Public Categories')
 
 
     #public_category = fields.Many2one( "product.category.public", string="Product Website category default", help="Select Public Website category for this ML category ")
