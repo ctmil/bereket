@@ -46,15 +46,15 @@ class stock_move(models.Model):
             #_logger.info("Moved products, put all this product stock state on batch for inmediate update: #"+str(len(st.product_id))+" >> "+str(st.product_id.ids) )
             for p in st.product_id:
                 _logger.info("post stock for: "+p.display_name)
-        
+
         return ret
-        
+
 class stock_picking( models.Model):
-    
+
     _inherit = "stock.picking"
-    
+
     def action_reassign( self ):
-        
+
         moves = self.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done'))
         if moves:
             #re assign
@@ -88,23 +88,23 @@ class stock_picking( models.Model):
                         m.location_id = qs and qs.location_id
                         #m.product_uom_qty = qty
                         #m.state = 'assigned'
-    
+
     # Comprobar disponibilidad
     def __action_assign( self ):
         _logger.info("meli_oerp_stock re-assign: "+str(self))
         #puede llegar a asignar varios stocks asociados
         ret = super( stock_picking, self).action_assign()
-        
+
         self.action_reassign()
-            
-            
+
+
         return ret
-        
+
 
 class stock_move_line(models.Model):
 
     _inherit = "stock.move.line"
-    
+
     @api.onchange('location_id')
     def onchange_location_id_ml(self):
         """ When the user is encoding a move line for a tracked product, we apply some logic to
@@ -130,14 +130,14 @@ class stock_move_line(models.Model):
                         qs = q
                         max = qs.quantity
                 self.lot_id = qs and qs.lot_id
-                        
-                    
+
+
         else:
             message = "Use a MercadoLibre Active Location"
             #if message:
             #    res['warning'] = {'title': _('Warning'), 'message': message}
         return res
-    
+
 
     @api.onchange('lot_id')
     def onchange_lot_id_ml(self):
@@ -163,8 +163,8 @@ class stock_move_line(models.Model):
                         qs = q
                         max = qs.quantity
                 self.location_id = qs and qs.location_id
-                        
-                    
+
+
         else:
             message = "Use a Lot"
             #if message:
@@ -189,4 +189,11 @@ class DeliveryCarrier(models.Model):
             return self.ml_tracking_url+str(picking.carrier_tracking_ref)
 
         return super(DeliveryCarrier, self).get_tracking_link(picking)
-    
+
+
+class stock_valuation_layer( models.Model):
+
+    _inherit = "stock.valuation.layer"
+
+    unit_cost = fields.Monetary('Unit Value', readonly=False)
+    value = fields.Monetary('Total Value', readonly=False)

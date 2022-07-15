@@ -9,7 +9,7 @@
                <search string="Search MercadoLibre Categories Information">
                  <field name="name" string="Name"/>
                  <field name="meli_category_id" string="Mercadolibre ID"/>
-                 <field name="public_category" string="Ecommerce Category"/>
+                 <!--field name="public_category" string="Ecommerce Category"/-->
                  <field name="meli_father_category_id" string="Mercadolibre Father ID"/>
                </search>
             </field>
@@ -55,7 +55,7 @@
             view_mode="form"
             target="new"/-->
 
-        <record model="ir.ui.view" id="view_meli_product_public_category_form_view">
+        <!--record model="ir.ui.view" id="view_meli_product_public_category_form_view">
           <field name="name">mercadolibre.website.category.form</field>
           <field name="model">product.public.category</field>
           <field name="inherit_id" ref="website_sale.product_public_category_form_view" />
@@ -64,7 +64,7 @@
                <field name="mercadolibre_category"/>
              </xpath>
           </field>
-        </record>
+        </record-->
 
         <record model="ir.ui.view" id="view_meli_product_attribute_view">
           <field name="name">mercadolibre.category.attribute.tree</field>
@@ -76,6 +76,8 @@
              </xpath>-->
              <field name="create_variant" position="after">
                <field name="meli_default_id_attribute"/>
+               <field name="meli_default_id_attribute_hidden"/>
+               <field name="meli_default_id_attribute_variation_attribute"/>
              </field>
           </field>
         </record>
@@ -90,7 +92,7 @@
                     <field name="meli_category_id"/>
                     <!--field name="meli_category_attributes" widget="url"/-->
                     <field name="public_category_id"/>
-                    <field name="public_category" string="Ecommerce Category"/>
+                    <!--field name="public_category" string="Ecommerce Category"/-->
                     <field name="is_branch"/>
                 </tree>
             </field>
@@ -127,8 +129,8 @@
                       <field name="meli_category_id"/>
                       <field name="meli_category_url" widget="url"/>
                       <field name="public_category_id"/>
-                      <field name="public_category" string="Ecommerce Category"/>
-                      <field name="public_categories" string="Ecommerce Categories"/>
+                      <!--field name="public_category" string="Ecommerce Category"/-->
+                      <!--field name="public_categories" string="Ecommerce Categories"/-->
                       <separator name="Settings" />
                       <field name="meli_category_settings"/>
                       <field name="meli_setting_minimum_price"/>

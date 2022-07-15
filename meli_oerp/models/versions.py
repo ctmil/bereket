@@ -156,8 +156,13 @@ def get_delivery_line(sorder):
         for line in sorder.order_line:
             if(line.product_id.id == carrier_product_id):
                 delivery_line = line
-                break
-        return delivery_line
+                return delivery_line
+                
+        delivery_lines = self.env['sale.order.line'].search([('order_id', 'in', sorder.ids), ('is_delivery', '=', True)])
+        if delivery_lines:
+            delivery_line = delivery_lines[0]
+            return delivery_line
+            
     except:
         _logger.info("Error get delivery line failed")
         return delivery_line
@@ -168,9 +173,25 @@ def set_delivery_line( sorder, delivery_price, delivery_message ):
     #check version
     delivery_line = get_delivery_line(sorder)
     if not delivery_line:
-        delivery_line = sorder.set_delivery_line(sorder.carrier_id, delivery_price)
-    sorder.write({
-    	'recompute_delivery_price': False,
-    	'delivery_message': delivery_message,
-    })
+        sorder.set_delivery_line(sorder.carrier_id, delivery_price)
+        delivery_line = get_delivery_line(sorder)
+    try:
+        recompute_delivery_price = False
+        
+        if (delivery_line and abs(delivery_line.price_unit - float(delivery_price)) < 1.1 ):        
+            recompute_delivery_price = True
+            sorder.set_delivery_line(sorder.carrier_id, delivery_price)
+            
+        sorder.write({
+        	'recompute_delivery_price': recompute_delivery_price,
+        	'delivery_message': delivery_message,
+        })
+    except:
+            _logger.info("Error set_delivery_line failed (order invoiced)")
+            
     return delivery_line
+    
+def remove_delivery_line( sorder, delivery_price=0):
+    sorder._remove_delivery_line()
+    return
+    
