@@ -565,7 +565,8 @@ class mercadolibre_shipment(models.Model):
             ship_id = order.shipping_id
         else:
             return None
-
+        
+        ship_json = None
         if meli.access_token=="PASIVA":
             ship_json = {
                 "id": ship_id,
