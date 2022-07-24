@@ -867,20 +867,26 @@ class mercadolibre_orders(models.Model):
                 and "date_closed" in order_fields
                 and config.mercadolibre_filter_order_datetime_start
                 and config.mercadolibre_filter_order_datetime_start>parse(order_fields["date_closed"]) ):
-            return { "error": "orden filtrada por fecha START > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_start)) }
+            error = { "error": "orden filtrada por fecha START > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_start)) }
+            _logger.info( "orders_update_order_json > filter:" + str(error) )
+            return
 
 
         if (    "mercadolibre_filter_order_datetime" in config._fields
                 and "date_closed" in order_fields
                 and config.mercadolibre_filter_order_datetime
                 and config.mercadolibre_filter_order_datetime>parse(order_fields["date_closed"]) ):
-            return { "error": "orden filtrada por FROM > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime)) }
+            error = { "error": "orden filtrada por FROM > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime)) }
+            _logger.info( "orders_update_order_json > filter:" + str(error) )
+            return error
 
         if (    "mercadolibre_filter_order_datetime_to" in config._fields
                 and "date_closed" in order_fields
                 and config.mercadolibre_filter_order_datetime_to
                 and config.mercadolibre_filter_order_datetime_to<parse(order_fields["date_closed"]) ):
-            return { "error": "orden filtrada por fecha TO > " + str(order_fields["date_closed"]) + " superior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_to)) }
+            error = { "error": "orden filtrada por fecha TO > " + str(order_fields["date_closed"]) + " superior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_to)) }
+            _logger.info( "orders_update_order_json > filter:" + str(error) )
+            return error
 
         _logger.info("orders_update_order_json > data "+str(data['id']) + " json:" + str(data['order_json']['id']) )
 
