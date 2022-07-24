@@ -1860,6 +1860,8 @@ class mercadolibre_orders(models.Model):
 
         #get with an item id
         context = context or self.env.context
+        warningobj = self.env['meli.warning']
+
         #_logger.info( "context:" + str(context) )
         company = self.env.user.company_id
 
@@ -2172,6 +2174,7 @@ class mercadolibre_orders_update(models.TransientModel):
         context = context or self.env.context
         orders_ids = ('active_ids' in context and context['active_ids']) or []
         orders_obj = self.env['mercadolibre.orders']
+        warningobj = self.env['meli.warning']
 
         self._cr.autocommit(False)
         rets = []
