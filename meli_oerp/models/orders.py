@@ -1899,6 +1899,11 @@ class mercadolibre_orders(models.Model):
                 pass;
                 #raise e
 
+        if rets and len(rets)==1:
+            return warningobj.info( title='MELI WARNING', message = "update order errors: "+str(len(rets)), message_html = str(rets))
+
+
+
         return rets
 
     def orders_query_iterate( self, offset=0, context=None, config=None, meli=None ):
