@@ -869,7 +869,7 @@ class mercadolibre_orders(models.Model):
                 and config.mercadolibre_filter_order_datetime_start>parse(order_fields["date_closed"]) ):
             error = { "error": "orden filtrada por fecha START > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_start)) }
             _logger.info( "orders_update_order_json > filter:" + str(error) )
-            return
+            return error
 
 
         if (    "mercadolibre_filter_order_datetime" in config._fields
