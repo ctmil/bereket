@@ -1878,6 +1878,7 @@ class mercadolibre_orders(models.Model):
         response = meli.get("/orders/"+str(order.order_id), {'access_token':meli.access_token})
         order_json = response.json()
         #_logger.info( order_json )
+        rets = []
 
         if "error" in order_json and meli.access_token!="PASIVA":
             _logger.error( order_json["error"] )
@@ -1887,8 +1888,10 @@ class mercadolibre_orders(models.Model):
                 if meli.access_token=="PASIVA":
                     order_json = None
 
-                self.orders_update_order_json( {"id": order.id, "order_json": order_json }, meli=meli, config=config )
+                ret = self.orders_update_order_json( {"id": order.id, "order_json": order_json }, meli=meli, config=config )
                 self._cr.commit()
+                if ret and "error" in ret:
+                    rets.append(ret)
             except Exception as e:
                 _logger.info("orders_update_order > Error actualizando ORDEN")
                 _logger.error(e, exc_info=True)
@@ -1896,7 +1899,7 @@ class mercadolibre_orders(models.Model):
                 pass;
                 #raise e
 
-        return {}
+        return rets
 
     def orders_query_iterate( self, offset=0, context=None, config=None, meli=None ):
 
@@ -1948,7 +1951,7 @@ class mercadolibre_orders(models.Model):
                     #_logger.info( order_json )
                     pdata = {"id": False, "order_json": order_json}
                     try:
-                        self.orders_update_order_json( data=pdata, config=config, meli=meli )
+                        ret = self.orders_update_order_json( data=pdata, config=config, meli=meli )
                         self._cr.commit()
                     except Exception as e:
                         _logger.info("orders_query_iterate > Error actualizando ORDEN")
@@ -2166,6 +2169,7 @@ class mercadolibre_orders_update(models.TransientModel):
         orders_obj = self.env['mercadolibre.orders']
 
         self._cr.autocommit(False)
+        rets = []
         try:
 
             for order_id in orders_ids:
@@ -2173,8 +2177,11 @@ class mercadolibre_orders_update(models.TransientModel):
                 _logger.info("order_update: %s " % (order_id) )
 
                 order = orders_obj.browse(order_id)
-                order.orders_update_order()
-
+                ret = order.orders_update_order()
+                if ret and "error" in ret:
+                    rets.append(ret)
+                    if len(orders_ids)==1:
+                        return ret
         except Exception as e:
             _logger.info("order_update > Error actualizando ordenes")
             _logger.error(e, exc_info=True)

@@ -66,7 +66,7 @@ class SaleOrder(models.Model):
             for spick in self.picking_ids:
                 _logger.info(spick)
                 if self.warehouse_id and spick.location_id:
-                    
+
                     if self.warehouse_id.lot_stock_id.id != spick.location_id.id:
                         _logger.info("Fixing location!")
                         spick.location_id = self.warehouse_id.lot_stock_id
@@ -200,7 +200,7 @@ class MercadolibreOrder(models.Model):
 
         result = super(MercadolibreOrder, self).orders_update_order_json( data=data, context=context, config=config, meli=meli)
 
-        if "error" in result and not 'No product related to meli_id' in result['error']:
+        if result and "error" in result and not 'No product related to meli_id' in result['error']:
             return result
         #company = self.env.user.company_id
         oid = (data and 'order_json' in data and 'id' in data['order_json'] and data['order_json']["id"])
