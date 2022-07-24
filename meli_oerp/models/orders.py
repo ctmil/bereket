@@ -2178,14 +2178,17 @@ class mercadolibre_orders_update(models.TransientModel):
 
                 order = orders_obj.browse(order_id)
                 ret = order.orders_update_order()
-                if ret and "error" in ret:
-                    rets.append(ret)
-                    if len(orders_ids)==1:
-                        return ret
+                if ret and ret[0] and "error" in ret[0]:
+                    rets.append(ret[0])
         except Exception as e:
             _logger.info("order_update > Error actualizando ordenes")
             _logger.error(e, exc_info=True)
             self._cr.rollback()
+
+        #Add warning with all filters errors:
+        if rets and len(rets)>0:
+            #return warning.
+            return warningobj.info( title='MELI WARNING', message = "update order errors: "+str(len(rets)), message_html = str(rets))
 
         return {}
 
