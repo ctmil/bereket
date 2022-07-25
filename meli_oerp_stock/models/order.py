@@ -66,7 +66,7 @@ class SaleOrder(models.Model):
             for spick in self.picking_ids:
                 _logger.info(spick)
                 if self.warehouse_id and spick.location_id:
-
+                    
                     if self.warehouse_id.lot_stock_id.id != spick.location_id.id:
                         _logger.info("Fixing location!")
                         spick.location_id = self.warehouse_id.lot_stock_id
@@ -186,10 +186,87 @@ class SaleOrder(models.Model):
 
         super(SaleOrder, self).confirm_ml( meli=meli, config=config )
 
+        #if self.location_id and self.location_id.mercadolibre_active == True:
+
+        # select lot_id based on max quantity , and assign location_id based on lot_id (search quant assigned... to this lot_id (name) )
+        # _logger.info("Location es ML Active "+str(self.location_id))
+        #search for the max... check the origin (move_ids.origin)
+        # check  and search for lot_id
+        # search for stock.quant   related to this location_id, then choose the first bigger lot_id
+        # if self.product_id:
+        #     quants = self.env["stock.quant"].search([('product_id','=',self.product_id.id),('location_id','=',self.location_id.id)])
+            #search max!!!
+        #     max = 0
+        #     qs = quants and quants[0]
+        #     for q in quants:
+        #         if q.inventory_quantity>max:
+        #             qs = q
+        #             max = qs.inventory_quantity
+        #     self.lot_id = qs and qs.lot_id
+        #
+
         #seleccionar en la confirmacion del stock.picking la informacion del carrier
         #
         #_logger.info("meli_oerp_stock confirm_ml ended.")
 
+
+    def ___action_confirm(self):
+
+        _logger.info("order _action_confirm")
+
+        ret = super( SaleOrder, self )._action_confirm()
+
+        _logger.info("order _action_confirm :"+str(self.picking_ids))
+
+        if self.picking_ids:
+
+            for spick in self.picking_ids:
+
+                #_logger.info("_action_confirm Picking state:"+str(spick.state))
+
+                if spick.state in ["assigned"]:
+
+                    _logger.info("_action_confirm picking Asssigned")
+                    #for sp in spick.move_line_ids:
+                    #    spick.action_assign()
+        return ret
+
+    def __action_confirm(self):
+
+        _logger.info("order action_confirm")
+
+        ret = super( SaleOrder, self ).action_confirm()
+
+        _logger.info("order action_confirm :"+str(self.picking_ids)+" ret:"+str(ret))
+
+        if self.picking_ids:
+
+            for spick in self.picking_ids:
+
+                #_logger.info("action_confirm  Picking state:"+str(spick.state))
+
+                if spick.state in ["assigned"]:
+
+                    _logger.info("action_confirm picking Asssigned")
+                    #for mv in spick.move_line_ids_without_package:
+                    #    _logger.info("Move Line: State:"+str(mv.state)
+                    #                +" Product:"+str(mv.product_id and mv.product_id.name)
+                    #                +" Location:"+str(mv.location_id and mv.location_id.name)
+                    #                +" Lot:"+str(mv.lot_id and mv.lot_id.name)
+                    #                +" Qty Reserved:"+str(mv.product_uom_qty)
+                    #                )
+                    #    #mv.state = 'draft'
+                    #spick.do_unreserve()
+                    #spick.action_assign()
+                    #for mv in spick.move_line_ids_without_package:
+                    #    _logger.info("Move Line: State:"+str(mv.state)
+                    #                +" Product:"+str(mv.product_id and mv.product_id.name)
+                    #                +" Location:"+str(mv.location_id and mv.location_id.name)
+                    #                +" Lot:"+str(mv.lot_id and mv.lot_id.name)
+                    #                +" Qty Reserved:"+str(mv.product_uom_qty)
+                    #                )
+                    #spick.action_reassign()
+        return ret
 
 class MercadolibreOrder(models.Model):
 
@@ -294,6 +371,8 @@ class MercadolibreOrder(models.Model):
 
             so_type_log_id = None
             so_type_log = None
+
+            #check first for sale_type_id from sale.order > seller team
 
             so_type_log = self.env['sale.order.type'].search([('name','like','SO-MELI')],limit=1)
             if not so_type_log:

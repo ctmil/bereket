@@ -70,8 +70,9 @@ class stock_picking( models.Model):
                             )
                 if m.product_id: # and m.location_id.mercadolibre_active == True:
                     _logger.info("meli_oerp_stock reassign: move: "+str(m))
+                    lotids = self.env["stock.location"].search([('location_id','in',[self.location_id])]).mapped('id') or []
                     #quants_by_lot = self.env["stock.quant"].search([('product_id','=',self.product_id.id),('location_id','=',self.location_id.id)])
-                    quants = self.env["stock.quant"].search([('product_id','=',m.product_id.id)])
+                    quants = self.env["stock.quant"].search([('product_id','=',m.product_id.id),('location_id','in',lotids)])
                     _logger.info("meli_oerp_stock reassign: quants:"+str(quants))
                     #search max!!!
                     max = 0
@@ -105,7 +106,7 @@ class stock_move_line(models.Model):
 
     _inherit = "stock.move.line"
 
-    @api.onchange('location_id')
+    #@api.onchange('location_id')
     def onchange_location_id_ml(self):
         """ When the user is encoding a move line for a tracked product, we apply some logic to
         help him. This includes:
@@ -113,7 +114,8 @@ class stock_move_line(models.Model):
             - warn if he has already encoded `lot_name` in another move line
         """
         res = {}
-        if self.location_id and self.location_id.mercadolibre_active == True:
+        if self.location_id:
+            # and self.location_id.mercadolibre_active == True:
             #
             _logger.info("Location es ML Active "+str(self.location_id))
             #search for the max... check the origin (move_ids.origin)
@@ -139,7 +141,7 @@ class stock_move_line(models.Model):
         return res
 
 
-    @api.onchange('lot_id')
+    #@api.onchange('lot_id')
     def onchange_lot_id_ml(self):
         """ When the user is encoding a move line for a tracked product, we apply some logic to
         help him. This includes:

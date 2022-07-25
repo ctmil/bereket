@@ -87,6 +87,8 @@ class ResCompany(models.Model):
     #procesar cuando es "Comprar"
     #mercadolibre_stock_sale_route_process = fields.Boolean(string="Routing Sale")
 
+    mercadolibre_stock_website_sale = fields.Boolean(string="Use Meli Stock for Ecommerce",default=False)
+
     def cron_meli_shipments( self ):
 
         _logger.info('company cron_meli_shipments() '+str(self))
