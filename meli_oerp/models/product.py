@@ -2478,7 +2478,7 @@ class product_product(models.Model):
                 product.meli_id = variant_principal.meli_id
 
     #Add/Update SELLER_SKU attribute, only if present in Odoo, also can update GTIN (barcode)
-    def _update_sku_attribute( self, attributes=[], set_sku=True, set_barcode=False ):
+    def _update_sku_attribute( self, attributes=[], set_sku=True, set_barcode=True ):
 
         variant = self
 
@@ -2756,7 +2756,7 @@ class product_product(models.Model):
                 elif (len(at_line_id.value_ids)>1):
                     variations_candidates = True
 
-            _logger.info(attributes)
+            _logger.info("attributes:"+str(attributes))
             product.meli_attributes = str(attributes)
 
         if product.meli_brand==False or len(product.meli_brand)==0:
@@ -2772,13 +2772,13 @@ class product_product(models.Model):
         if product.meli_brand and len(product.meli_brand) > 0 and not "BRAND" in attributes_ids:
             attribute = { "id": "BRAND", "value_name": product.meli_brand }
             attributes.append(attribute)
-            _logger.info(attributes)
+            _logger.info("attributes:"+str(attributes))
             product.meli_attributes = str(attributes)
 
         if product.meli_model and len(product.meli_model) > 0 and not "MODEL" in attributes_ids:
             attribute = { "id": "MODEL", "value_name": product.meli_model }
             attributes.append(attribute)
-            _logger.info(attributes)
+            _logger.info("attributes:"+str(attributes))
             product.meli_attributes = str(attributes)
 
         #_product_post_set_category
@@ -2912,6 +2912,7 @@ class product_product(models.Model):
 
         if len(attributes):
             body["attributes"] =  attributes
+            _logger.info("body attributes:"+str(attributes))
 
         #publicando multiples imagenes
         multi_images_ids = {}
@@ -3517,22 +3518,45 @@ class product_product(models.Model):
                         product.meli_id_variation = pjson["variations"][0]["id"]
 
         if (product.meli_id_variation):
-            #_logger.info("Posting using product.meli_id_variation")
-            var = {
-                #"id": str( product.meli_id_variation ),
-                "price": product.meli_price,
-                #"picture_ids": ['806634-MLM28112717071_092018', '928808-MLM28112717068_092018', '643737-MLM28112717069_092018', '934652-MLM28112717070_092018']
-            }
-            responsevar = meli.put("/items/"+product.meli_id+'/variations/'+str( product.meli_id_variation ), var, {'access_token':meli.access_token})
-            if (responsevar):
-                rjson = responsevar.json()
-                if rjson:
-                    #_logger.info(rjson)
-                    if "error" in rjson:
-                        _logger.error(rjson)
-                        return rjson
-                    if (len(rjson) and rjson[0] and 'price' in rjson[0]):
-                        _logger.info( "Posted price ok " + str(product.meli_id) + ": " + str(rjson[0]['price']) )
+            meli_id = product.meli_id
+            meli_price = product.meli_price
+            response = meli.get("/items/%s" % (str(meli_id)), {'access_token':meli.access_token})
+            if (response):
+
+                pjson = response.json()
+
+                if "variations" in pjson:
+                    vars = []
+                    for varx in pjson["variations"]:
+                    #_logger.info("Posting using product.meli_id_variation")
+                        var = {
+                            "id": varx["id"],
+                            "price": meli_price,
+                            #"picture_ids": ['806634-MLM28112717071_092018', '928808-MLM28112717068_092018', '643737-MLM28112717069_092018', '934652-MLM28112717070_092018']
+                        }
+                        vars.append(var)
+                    _logger.info("product_post_price (variations):"+str(vars))
+
+                    #responsevar = meli.put("/items/"+str(meli_id)+'/variations/'+str( meli_id_variation ), var, {'access_token':meli.access_token})
+                    responsevar = meli.put("/items/"+str(meli_id), { "variations": vars }, {'access_token':meli.access_token})
+                    if (responsevar):
+                        rjson = responsevar.json()
+                        if rjson:
+                            #_logger.info('rjson'+str(rjson))
+                            if "error" in rjson:
+                                _logger.error(rjson)
+                                self.meli_price_error = str(rjson)
+                                self.product_tmpl_id.meli_price_error = self.meli_price_error
+                                return rjson
+                            if ('price' in rjson):
+                                _logger.info( "Posted price ok (variations)" + str(meli_id) + ": " + str(rjson['price']) )
+                                self.meli_price_error = 'ok'
+                                self.meli_price_update = ml_datetime( str( datetime.now() ) )
+                                self.product_tmpl_id.meli_price_error = self.meli_price_error
+                                self.product_tmpl_id.meli_price_update = self.meli_price_update
+                            else:
+                                _logger.info( "Posted price ok (variations)" + str(meli_id) + ": " + str('variations' in rjson and rjson['variations']))
+
         else:
             _logger.info("product_post_price:"+str(fields))
             response = meli.put("/items/"+product.meli_id, fields, {'access_token':meli.access_token})
@@ -3540,7 +3564,14 @@ class product_product(models.Model):
                 rjson = response.json()
                 if "error" in rjson:
                     _logger.error(rjson)
+                    self.meli_price_error = str(rjson)
+                    self.product_tmpl_id.meli_price_error = self.meli_price_error
                     return rjson
+                self.meli_price_error = 'ok'
+                self.meli_price_update = ml_datetime( str( datetime.now() ) )
+                self.product_tmpl_id.meli_price_error = self.meli_price_error
+                self.product_tmpl_id.meli_price_update = self.meli_price_update
+
         return {}
 
     def get_title_for_meli(self):

@@ -822,7 +822,7 @@ class mercadolibre_orders(models.Model):
 
         oid = data["id"]
         order_json = data["order_json"]
-        _logger.info( "data:" + str(data) )
+        #_logger.info( "data:" + str(data) )
         context = context or self.env.context
         #_logger.info( "context:" + str(context) )
         company = (config and "company_id" in config._fields and config.company_id) or self.env.user.company_id
@@ -929,7 +929,7 @@ class mercadolibre_orders(models.Model):
         partner_shipping_id = False
 
         if not 'buyer' in order_json or not 'name' in order_json['buyer'] or not 'first_name' in order_json['buyer']:
-            _logger.info("Buyer not present, fetch order")
+            #_logger.info("Buyer not present, fetch order")
             response = meli.get("/orders/"+str(order_json['id']), {'access_token':meli.access_token})
             order_json = response.json()
             #_logger.info(order_json)
@@ -1837,8 +1837,8 @@ class mercadolibre_orders(models.Model):
                     #_logger.info(line.qty_to_invoice)
                     pass;
 
-            if (config.mercadolibre_order_confirmation!="manual"):
-                sorder.confirm_ml( meli=meli, config=config )
+            #if (config.mercadolibre_order_confirmation!="manual"):
+            sorder.confirm_ml( meli=meli, config=config )
 
             if (sorder.meli_status=="cancelled" and sorder.state in ["draft","sale","sent"]):
                 sorder.action_cancel()

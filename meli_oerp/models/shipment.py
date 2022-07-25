@@ -63,7 +63,23 @@ class mercadolibre_shipment_print(models.TransientModel):
         company = self.env.user.company_id
         if not config:
             config = company
+            
+        _logger.info( "shipment_print context: " + str(context) )
         shipment_ids = ('active_ids' in context and context['active_ids']) or []
+        #check if model is stock_picking or mercadolibre.shipment
+        #stock.picking > sale_id is the order, then the shipment is sale_id.meli_shipment
+        active_model = context.get("active_model")
+        _logger.info( "shipment_print active_model: " + str(active_model) )
+        if active_model == "stock.picking":
+            shipment_ids_from_pick = []
+            for spick_id in shipment_ids:
+                spick = self.env["stock.picking"].browse(spick_id)            
+                sale_order = spick.sale_id
+                if sale_order and sale_order.meli_shipment:
+                    shipment_ids_from_pick.append(sale_order.meli_shipment.id)
+            shipment_ids = shipment_ids_from_pick
+            _logger.info("stock.picking shipment_ids:"+str(shipment_ids))
+            
         shipment_obj = self.env['mercadolibre.shipment']
         warningobj = self.env['meli.warning']
 
@@ -434,10 +450,10 @@ class mercadolibre_shipment(models.Model):
                 #delivery_price = vals['price']
                 #display_price = vals['carrier_price']
                 set_delivery_line(sorder, delivery_price, delivery_message )
-
+                
             #if (sorder.carrier_id and delivery_price<=0.0):
             #    sorder._remove_delivery_line()
-
+                
 
             #REMOVE OLD SALE ORDER ITEM SHIPPING ITEM
             saleorderline_item_fields = {
@@ -540,7 +556,7 @@ class mercadolibre_shipment(models.Model):
 
     #Return shipment object based on mercadolibre.orders "order"
     def fetch( self, order, meli=None, config=None ):
-        _logger.info("ship fetch")
+        #_logger.info("ship fetch")
         company = self.env.user.company_id
         if not config:
             config = company
@@ -741,7 +757,7 @@ class mercadolibre_shipment(models.Model):
                         coma = ""
                         packed_order_ids =""
                         items_json_sorted = sorted(items_json, key=lambda x: x["order_id"], reverse=False)
-                        _logger.info("items_json_sorted:"+str(items_json_sorted))
+                        #_logger.info("items_json_sorted:"+str(items_json_sorted))
                         for item in items_json_sorted:
                             #check mercadolibre_orders for full pack
                             if "order_id" in item:
@@ -769,13 +785,13 @@ class mercadolibre_shipment(models.Model):
                 shipment = shipment_obj.search([('shipping_id','=', ship_id)])
                 #_logger.info(ships)
                 if (len(shipment)==0):
-                    _logger.info("Importing shipment: " + str(ship_id))
+                    #_logger.info("Importing shipment: " + str(ship_id))
                     #_logger.info(str(ship_fields))
                     shipment = shipment_obj.create((ship_fields))
                     if (shipment):
                         _logger.info("Created shipment ok!")
                 else:
-                    _logger.info("Updating shipment: " + str(ship_id))
+                    #_logger.info("Updating shipment: " + str(ship_id))
                     shipment.write((ship_fields))
 
                 if shipment and items_json:
@@ -787,7 +803,7 @@ class mercadolibre_shipment(models.Model):
                 try:
                     #_logger.info("ships.pdf_filename:")
                     #_logger.info(shipment.pdf_filename)
-                    if (1==2 and shipment.pdf_filename):
+                    if (1==1 and shipment.pdf_filename):
                         #_logger.info("We have a pdf file")
                         if (shipment.pdfimage_filename==False):
                             #_logger.info("Try create a pdf image file")
@@ -821,8 +837,8 @@ class mercadolibre_shipment(models.Model):
                         sorder.meli_shipment = shipment
 
                 #if its a pack order, create it, oif full_orders were fetched (we can force this now)
-                _logger.info("full_orders:"+str(full_orders))
-                _logger.info("all_orders:"+str(all_orders))
+                #_logger.info("full_orders:"+str(full_orders))
+                #_logger.info("all_orders:"+str(all_orders))
                 if (full_orders and ship_fields["pack_order"]):
                     plistid = None
                     if config.mercadolibre_pricelist:
@@ -969,7 +985,7 @@ class mercadolibre_shipment(models.Model):
     def update_item( self, item=None ):
         shipment = self
         sitem = None
-        _logger.info("update shipment:"+str(item))
+        #_logger.info("update shipment:"+str(item))
         if "variation_id" in item and item["variation_id"]:
             sitem = self.env["mercadolibre.shipment.item"].search([ ("shipment_id","=",shipment.id),("order_id","=",item["order_id"]), ("item_id","=",item["item_id"]), ("variation_id","=",item["variation_id"]) ],limit=1)
         else:
@@ -983,7 +999,7 @@ class mercadolibre_shipment(models.Model):
             "shipment_id": shipment.id,
             "data": str(item)
         }
-        _logger.info("update shipment ifields:"+str(ifields))
+        #_logger.info("update shipment ifields:"+str(ifields))
         if sitem:
             sitem.write(ifields)
         else:
