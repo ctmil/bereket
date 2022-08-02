@@ -2187,7 +2187,9 @@ class mercadolibre_orders_update(models.TransientModel):
                 order = orders_obj.browse(order_id)
                 ret = order.orders_update_order()
                 _logger.info("order_update ret:"+str(ret))
-                if ret and len(ret) and ret[0] and "error" in ret[0]:
+                if ret and type(ret)==dict and 'name' in ret:
+                    rets.append(ret)
+                if ret and len(ret) and type(ret)==list and and ret[0] and "error" in ret[0]:
                     rets.append(ret[0])
         except Exception as e:
             _logger.info("order_update > Error actualizando ordenes")
