@@ -1728,7 +1728,7 @@ class mercadolibre_orders(models.Model):
 
                 order.name = "MO [%s] %s" % ( str(order.order_id), product_related_obj.display_name )
 
-                if (sorder):
+                if (sorder and sorder.amount_total<sorder.meli_paid_amount):
                     saleorderline_item_fields = {
                         'company_id': company.id,
                         'order_id': sorder.id,
