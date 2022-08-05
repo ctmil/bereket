@@ -966,8 +966,10 @@ class mercadolibre_shipment(models.Model):
 
                                 saleorderline_item_fields.update( order._set_product_unit_price( product_related_obj, mOrder.order_items[0] ) )
 
-                                saleorderline_item_ids = saleorderline_obj.search( [('meli_order_item_id','=',saleorderline_item_fields['meli_order_item_id']),
-                                                                                    ('meli_order_item_variation_id','=',saleorderline_item_fields['meli_order_item_variation_id']),
+                                #saleorderline_item_ids = saleorderline_obj.search( [('meli_order_item_id','=',saleorderline_item_fields['meli_order_item_id']),
+                                #                                                    ('meli_order_item_variation_id','=',saleorderline_item_fields['meli_order_item_variation_id']),
+                                #                                                    ('order_id','=',shipment.sale_order.id)] )
+                                saleorderline_item_ids = saleorderline_obj.search( [('product_id','=',product_related_obj.id),
                                                                                     ('order_id','=',shipment.sale_order.id)] )
 
                                 if not saleorderline_item_ids:
