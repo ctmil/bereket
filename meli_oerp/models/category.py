@@ -368,7 +368,9 @@ class mercadolibre_category(models.Model):
 
         warningobj = self.env['meli.warning']
         category_obj = self.env['mercadolibre.category']
-        www_cats = self.env['product.public.category']
+        www_cats = None
+        if 'product.public.category' in self.env:
+            www_cats = self.env['product.public.category']
 
         meli = meli or self.env['meli.util'].get_new_instance(company)
 
@@ -425,7 +427,7 @@ class mercadolibre_category(models.Model):
                 if 'product.public.category' in self.env:
                     www_cat_id = ml_cat_id.public_category_id
 
-            if not www_cat_id and create_missing_website:
+            if not www_cat_id and create_missing_website and 'product.public.category' in self.env:
                 _logger.info("Ecommerce category missing")
                 #_logger.info( "Creating category: " + str(category_id) )
                 #https://api.mercadolibre.com/categories/MLA1743
