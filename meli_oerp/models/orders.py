@@ -1913,7 +1913,7 @@ class mercadolibre_orders(models.Model):
 
     def orders_query_iterate( self, offset=0, context=None, config=None, meli=None, fetch_id_only=False, fetch_ids=[] ):
 
-        _logger.info("mercadolibre.orders >> orders_query_iterate: meli: "+str(meli)+" config:"+str(config))
+        _logger.info("mercadolibre.orders >> orders_query_iterate: meli: "+str(meli)+" config:"+str(config)+' fetch_id_only:'+str(fetch_id_only))
         offset_next = 0
         __fetch_ids = fetch_ids
 
@@ -1963,14 +1963,15 @@ class mercadolibre_orders(models.Model):
                     pdata = {"id": False, "order_json": order_json}
                     if "id" in order_json and fetch_id_only:
                         __fetch_ids.append(order_json["id"])
-                    try:
-                        ret = self.orders_update_order_json( data=pdata, config=config, meli=meli )
-                        self._cr.commit()
-                    except Exception as e:
-                        _logger.info("orders_query_iterate > Error actualizando ORDEN")
-                        _logger.error(e, exc_info=True)
-                        self._cr.rollback()
-                        pass;
+                    else:
+                        try:
+                            ret = self.orders_update_order_json( data=pdata, config=config, meli=meli )
+                            self._cr.commit()
+                        except Exception as e:
+                            _logger.info("orders_query_iterate > Error actualizando ORDEN")
+                            _logger.error(e, exc_info=True)
+                            self._cr.rollback()
+                            pass;
 
         if (offset_next>0):
             __fetch_ids = self.orders_query_iterate( offset=offset_next, meli=meli, config=config, fetch_id_only=fetch_id_only, fetch_ids=__fetch_ids )
@@ -1986,7 +1987,7 @@ class mercadolibre_orders(models.Model):
         if not meli:
             meli = self.env['meli.util'].get_new_instance(company)
 
-        _logger.info("mercadolibre.orders >> orders_query_recent: meli: "+str(meli)+" config:"+str(config))
+        _logger.info("mercadolibre.orders >> orders_query_recent: meli: "+str(meli)+" config:"+str(config)+' fetch_id_only:'+str(fetch_id_only))
         self._cr.autocommit(False)
         __fetch_ids = None
         try:
