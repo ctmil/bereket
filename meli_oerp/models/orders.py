@@ -1859,6 +1859,45 @@ class mercadolibre_orders(models.Model):
 
         return {}
 
+    def orders_import_order( self, order_id, context=None, meli=None, config=None ):
+        if not order_id:
+            return {"error": "order_id missing"}
+            
+        context = context or self.env.context
+        warningobj = self.env['meli.warning']
+
+        #_logger.info( "context:" + str(context) )
+        company = self.env.user.company_id
+
+        order_obj = self.env['mercadolibre.orders']
+        
+        if not meli:
+            meli = self.env['meli.util'].get_new_instance(company)
+
+        if not config:
+            config = company
+            
+        morder = order_obj.search( [('order_id','=',str(order_id)], limit=1 )
+        if morder:
+            return { "error": str(order_id)+" already in Odoo" }
+        
+        response = meli.get("/orders/"+str(order_id), {'access_token':meli.access_token})
+        order_json = response.json()
+        
+        if order_json:
+            if "error" in order_json:
+                return { "error": order_json }
+            else:
+                ret = self.orders_update_order_json( {"id": False, "order_json": order_json }, meli=meli, config=config )
+                if ret:
+                    _logger.info(ret)
+                    return { "ret": ret }
+        else:
+            return { "error": "no order json "+str(order_json) }
+        
+        return {}
+        
+    
     def orders_update_order( self, context=None, meli=None, config=None ):
 
         #get with an item id
