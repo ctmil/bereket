@@ -1959,10 +1959,10 @@ class mercadolibre_orders(models.Model):
         _logger.info( orders_json )
         if "results" in orders_json:
             for order_json in orders_json["results"]:
-                if order_json:
-                    _logger.info( order_json )
+                if order_json:                    
                     pdata = {"id": False, "order_json": order_json}
                     if "id" in order_json and fetch_id_only:
+                        _logger.info( order_json["id"] )
                         __fetch_ids.append(order_json["id"])
                     else:
                         try:
@@ -1999,6 +1999,7 @@ class mercadolibre_orders(models.Model):
             self._cr.rollback()
 
         if __fetch_ids:
+            _logger.info( "__fetch_ids:"+str(__fetch_ids) )
             return __fetch_ids
 
         return {}
