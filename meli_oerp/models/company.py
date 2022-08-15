@@ -442,6 +442,12 @@ class res_company(models.Model):
         result = orders_obj.orders_query_recent(fetch_id_only=fetch_id_only)
         return result
 
+    def meli_import_order(self, order_id):
+        _logger.info('company.meli_import_order() order_id:'+str(order_id))
+        company = self.env.user.company_id
+        orders_obj = self.env['mercadolibre.orders']
+        result = orders_obj.orders_import_order(order_id=order_id)
+        return result
 
     def meli_query_products(self):
         _logger.info('company.meli_query_products() ')
