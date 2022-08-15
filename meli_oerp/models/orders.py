@@ -1940,6 +1940,8 @@ class mercadolibre_orders(models.Model):
             _logger.error( orders_json["error"] )
             if (orders_json["message"]=="invalid_token"):
                 _logger.error( orders_json["message"] )
+            if __fetch_ids:
+                return __fetch_ids
             return {}
 
         order_date_filter = ("mercadolibre_filter_order_datetime" in config._fields and config.mercadolibre_filter_order_datetime)
