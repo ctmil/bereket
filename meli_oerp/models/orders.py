@@ -1877,7 +1877,7 @@ class mercadolibre_orders(models.Model):
         if not config:
             config = company
             
-        morder = order_obj.search( [('order_id','=',str(order_id)], limit=1 )
+        morder = order_obj.search( [('order_id','=',str(order_id))], limit=1 )
         if morder:
             return { "error": str(order_id)+" already in Odoo" }
         
