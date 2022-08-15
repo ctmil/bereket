@@ -1979,6 +1979,13 @@ class mercadolibre_orders(models.Model):
 
     def orders_query_recent( self, meli=None, config=None, fetch_id_only=False ):
 
+        company = self.env.user.company_id
+        if not config:
+            config = company
+        
+        if not meli:
+            meli = self.env['meli.util'].get_new_instance(company)
+
         _logger.info("mercadolibre.orders >> orders_query_recent: meli: "+str(meli)+" config:"+str(config))
         self._cr.autocommit(False)
         __fetch_ids = None
