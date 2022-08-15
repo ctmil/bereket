@@ -1911,10 +1911,11 @@ class mercadolibre_orders(models.Model):
 
         return rets
 
-    def orders_query_iterate( self, offset=0, context=None, config=None, meli=None ):
+    def orders_query_iterate( self, offset=0, context=None, config=None, meli=None, fetch_id_only=False, fetch_ids=[] ):
 
         _logger.info("mercadolibre.orders >> orders_query_iterate: meli: "+str(meli)+" config:"+str(config))
         offset_next = 0
+        __fetch_ids = fetch_ids
 
         company = self.env.user.company_id
         if not config:
@@ -1960,6 +1961,8 @@ class mercadolibre_orders(models.Model):
                 if order_json:
                     #_logger.info( order_json )
                     pdata = {"id": False, "order_json": order_json}
+                    if "id" in order_json and fetch_id_only:
+                        __fetch_ids.append(order_json["id"])
                     try:
                         ret = self.orders_update_order_json( data=pdata, config=config, meli=meli )
                         self._cr.commit()
@@ -1970,21 +1973,24 @@ class mercadolibre_orders(models.Model):
                         pass;
 
         if (offset_next>0):
-            self.orders_query_iterate( offset=offset_next, meli=meli, config=config )
+            __fetch_ids = self.orders_query_iterate( offset=offset_next, meli=meli, config=config, fetch_id_only=fetch_id_only, fetch_ids=__fetch_ids )
 
-        return {}
+        return __fetch_ids
 
-    def orders_query_recent( self, meli=None, config=None ):
+    def orders_query_recent( self, meli=None, config=None, fetch_id_only=False ):
 
         _logger.info("mercadolibre.orders >> orders_query_recent: meli: "+str(meli)+" config:"+str(config))
         self._cr.autocommit(False)
-
+        __fetch_ids = None
         try:
-            self.orders_query_iterate( offset=0, meli=meli, config=config )
+            __fetch_ids = self.orders_query_iterate( offset=0, meli=meli, config=config, fetch_id_only=fetch_id_only )
         except Exception as e:
             _logger.info("orders_query_recent > Error iterando ordenes")
             _logger.error(e, exc_info=True)
             self._cr.rollback()
+
+        if __fetch_ids:
+            return __fetch_ids
 
         return {}
 
