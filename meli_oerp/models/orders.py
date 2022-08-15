@@ -1956,10 +1956,11 @@ class mercadolibre_orders(models.Model):
                             offset_next = offset + orders_json["paging"]["limit"]
                         _logger.info("offset_next:"+str(offset_next))
 
+        _logger.info( orders_json )
         if "results" in orders_json:
             for order_json in orders_json["results"]:
                 if order_json:
-                    #_logger.info( order_json )
+                    _logger.info( order_json )
                     pdata = {"id": False, "order_json": order_json}
                     if "id" in order_json and fetch_id_only:
                         __fetch_ids.append(order_json["id"])
