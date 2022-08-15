@@ -1964,8 +1964,38 @@ class mercadolibre_orders(models.Model):
                 if order_json:                    
                     pdata = {"id": False, "order_json": order_json}
                     if "id" in order_json and fetch_id_only:
+                        
                         #_logger.info( order_json["id"] )
-                        __fetch_ids.append(str(order_json["id"]))
+                        order_fields = self.prepare_ml_order_vals( order_json=order_json, meli=meli, config=config )
+                        in_range = True
+                        if (    "mercadolibre_filter_order_datetime_start" in config._fields
+                                and "date_closed" in order_fields
+                                and config.mercadolibre_filter_order_datetime_start
+                                and config.mercadolibre_filter_order_datetime_start>parse(order_fields["date_closed"]) ):
+                            #error = { "error": "orden filtrada por fecha START > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_start)) }
+                            #_logger.info( "orders_update_order_json > filter:" + str(error) )
+                            #return error
+                            in_range = False
+                
+                
+                        if (    "mercadolibre_filter_order_datetime" in config._fields
+                                and "date_closed" in order_fields
+                                and config.mercadolibre_filter_order_datetime
+                                and config.mercadolibre_filter_order_datetime>parse(order_fields["date_closed"]) ):
+                            #error = { "error": "orden filtrada por FROM > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime)) }
+                            #_logger.info( "orders_update_order_json > filter:" + str(error) )
+                            in_range = False
+                
+                        if (    "mercadolibre_filter_order_datetime_to" in config._fields
+                                and "date_closed" in order_fields
+                                and config.mercadolibre_filter_order_datetime_to
+                                and config.mercadolibre_filter_order_datetime_to<parse(order_fields["date_closed"]) ):
+                            #error = { "error": "orden filtrada por fecha TO > " + str(order_fields["date_closed"]) + " superior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_to)) }
+                            #_logger.info( "orders_update_order_json > filter:" + str(error) )
+                            in_range = False
+                            
+                        if in_range:
+                            __fetch_ids.append(str(order_json["id"]))
                     else:
                         try:
                             ret = self.orders_update_order_json( data=pdata, config=config, meli=meli )
