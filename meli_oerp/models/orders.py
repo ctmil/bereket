@@ -2000,7 +2000,7 @@ class mercadolibre_orders(models.Model):
 
         if __fetch_ids:
             _logger.info( "__fetch_ids:"+str(__fetch_ids) )
-            return __fetch_ids
+            return { "fetch_ids": __fetch_ids }
 
         return {}
 
