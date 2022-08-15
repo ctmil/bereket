@@ -1963,7 +1963,7 @@ class mercadolibre_orders(models.Model):
                     pdata = {"id": False, "order_json": order_json}
                     if "id" in order_json and fetch_id_only:
                         _logger.info( order_json["id"] )
-                        __fetch_ids.append(order_json["id"])
+                        __fetch_ids.append(str(order_json["id"]))
                     else:
                         try:
                             ret = self.orders_update_order_json( data=pdata, config=config, meli=meli )
