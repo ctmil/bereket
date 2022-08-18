@@ -213,6 +213,13 @@ class sale_order(models.Model):
 
         total_config = (config and "mercadolibre_order_total_config" in config._fields) and config.mercadolibre_order_total_config
 
+        meli_ord = None
+        meli_shipment = None
+
+        if self.meli_orders:
+            meli_ord = self.meli_orders[0]
+            meli_shipment = self.meli_shipment
+
         if not config or not total_config:
             return self.meli_total_amount;
 
@@ -221,10 +228,16 @@ class sale_order(models.Model):
             return 0
 
         if total_config in ['manual_conflict']:
+
             if abs(self.meli_total_amount - self.meli_paid_amount)<1.0:
+                if ( meli_shipment and meli_shipment.shipping_cost>0 and meli_shipment.shipping_list_cost>0 ):
+                    return 0
                 return self.meli_paid_amount
             else:
                 #conflict if do not match
+                if ( meli_shipment and meli_shipment.shipping_cost>0 and meli_shipment.shipping_list_cost>0 ):
+                    if ( self.meli_total_amount + self.shipping_cost - self.meli_paid_amount )<1.0:
+                        return self.meli_paid_amount
                 return 0
 
         if total_config in ['paid_amount']:
@@ -2127,14 +2140,67 @@ class mercadolibre_orders(models.Model):
     date_created = fields.Datetime('Creation date')
     date_closed = fields.Datetime('Closing date')
 
+
+    def search_order_order_product(self, operator, value):
+        _logger.info("search_order_item_product_id")
+        _logger.info(operator)
+        _logger.info(value)
+        if operator == '=':
+            #name = self.env.context.get('name', False)
+            #if name is not False:
+            id_list = []
+            _logger.info(self.env.context)
+            #name = self.env.context.get('name', False)
+            order_items = []
+            if value == True:
+                order_items = self.env['mercadolibre.order_items'].search([('product_id','!=',False)], limit=10000)
+            else:
+                order_items = self.env['mercadolibre.order_items'].search([('product_id','=',False)], limit=10000)
+            
+            #if (value):
+            for item in order_items:
+                #if (value in p.meli_publications):
+                id_list.append(item.order_id.id)
+
+            return [('id', 'in', id_list)]
+        else:
+            _logger.error(
+                'The field name is not searchable'
+                ' with the operator: {}',format(operator)
+            )
+            
     order_items = fields.One2many('mercadolibre.order_items','order_id',string='Order Items' )
 
     def _order_product( self ):
         for ord in self:
-            ord.order_product = ord.order_items and ord.order_items[0].product_id
-    order_product = fields.Many2one('product.product',string='Order Items',compute=_order_product )
+            ord.order_product = False
+            
+            if ord.order_items and ord.order_items[0]:
+                ord.order_product = ord.order_items[0].product_id
+                
+    order_product = fields.Many2one('product.product',string='Order Product',compute=_order_product, search=search_order_order_product )
+    
+    def _order_product_sku( self ):
+        for ord in self:
+            ord.order_product_sku = ""
+            
+            if ord.order_items and ord.order_items[0]:
+                ord.order_product_sku = ord.order_items[0].seller_sku
+    
+    order_product_sku = fields.Char(string='Order Product Sku', compute=_order_product_sku )
+
 
     payments = fields.One2many('mercadolibre.payments','order_id',string='Payments' )
+
+    def _payments_shipment_amount(self):
+        for mor in self:
+            sum = 0
+            for pay in mor.payments:
+                if pay.status == 'approved':
+                    sum+= pay.shipping_amount
+            mor.payments_shipment_amount = sum
+
+    payments_shipment_amount = fields.Float(string="Payments Shipment Amount", compute="_payments_shipment_amount" )
     shipping = fields.Text(string="Shipping")
     shipping_id = fields.Char(string="Shipping id")
     shipment = fields.Many2one('mercadolibre.shipment',string='Shipment')
