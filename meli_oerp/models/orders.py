@@ -1957,7 +1957,9 @@ class mercadolibre_orders(models.Model):
                 #raise e
 
         if rets and len(rets)==1:
-            return warningobj.info( title='MELI WARNING', message = "update order errors: "+str(len(rets)), message_html = str(rets))
+            warn_obj = warningobj.info( title='MELI WARNING', message = "update order errors: "+str(len(rets)), message_html = str(rets))
+            warn_obj["errores"] = str(rets)
+            return warn_obj
 
 
 
