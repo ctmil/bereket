@@ -2191,7 +2191,7 @@ class mercadolibre_orders(models.Model):
     
     order_product_sku = fields.Char(string='Order Product Sku', compute=_order_product_sku )
 
-    def __order_product_units( self ):
+    def _order_product_units( self ):
         for ord in self:
             ord.order_product_units = 0
             
