@@ -45,6 +45,8 @@
                     <field name="company_id"/>
                     <field name="seller_id"/>
                     <field name="name"/>
+                    <field name="order_product"/>
+                    <!--field name="order_product_units"/-->
                     <field name="order_id"/>
                     <field name="pack_id"/>
                     <field name="shipping_id" invisible="0"/>
