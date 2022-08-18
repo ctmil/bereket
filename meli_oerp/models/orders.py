@@ -2191,6 +2191,16 @@ class mercadolibre_orders(models.Model):
     
     order_product_sku = fields.Char(string='Order Product Sku', compute=_order_product_sku )
 
+    def __order_product_units( self ):
+        for ord in self:
+            ord.order_product_units = 0
+            
+            if ord.order_items and ord.order_items[0]:
+                ord.order_product_units = ord.order_items[0].quantity
+    
+    
+    order_product_units = fields.Integer(string='Order Product Units',compute=_order_product_units )
+
 
     payments = fields.One2many('mercadolibre.payments','order_id',string='Payments' )
 
