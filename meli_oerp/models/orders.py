@@ -1870,6 +1870,8 @@ class mercadolibre_orders(models.Model):
         except:
             pass;
 
+        self._sale_order_shipment_status()
+
         return {}
 
     def orders_import_order( self, order_id, context=None, meli=None, config=None ):
@@ -2249,7 +2251,7 @@ class mercadolibre_orders(models.Model):
                         if (spick.move_line_ids and mord.order_product):
                             for pop in spick.move_line_ids:
                                 if pop.product_id and pop.product_id.id==mord.order_product.id:
-                                    mord.sale_order_shipment_status = str(spick.state)
+                                    mord.sale_order_shipment_status = str(pop.state)
 
                             #if (spick.move_line_ids):
                             #    if (len(spick.move_line_ids)>=1):
@@ -2262,7 +2264,7 @@ class mercadolibre_orders(models.Model):
                             #        if (spick.state in ['assigned']):
                             #            spick.button_validate()
 
-    sale_order_shipment_status = fields.Char(string="Odoo Shipment Status",compute="_sale_order_shipment_status")
+    sale_order_shipment_status = fields.Char(string="Odoo Shipment Status",compute="_sale_order_shipment_status",search="_search_sale_order_shipment_status",store=True)
 
 
     _sql_constraints = [
