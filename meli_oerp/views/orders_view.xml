@@ -62,6 +62,7 @@
                     <field name="tags" invisible="1"/>
                     <field name="pack_order" string="Es Carrito"/>
                     <field name="catalog_order" string="Es de Catalogo"/>
+                    <field name="sale_order_shipment_status"/>
                 </tree>
             </field>
         </record>
