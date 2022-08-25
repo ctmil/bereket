@@ -46,6 +46,7 @@
                     <field name="seller_id"/>
                     <field name="name"/>
                     <field name="order_product"/>
+                    <field name="sale_order_shipment_status"/>
                     <!--field name="order_product_units"/-->
                     <field name="order_id"/>
                     <field name="pack_id"/>
@@ -62,7 +63,7 @@
                     <field name="tags" invisible="1"/>
                     <field name="pack_order" string="Es Carrito"/>
                     <field name="catalog_order" string="Es de Catalogo"/>
-                    <field name="sale_order_shipment_status"/>
+
                 </tree>
             </field>
         </record>
@@ -246,6 +247,7 @@
             <field name="model">mercadolibre.orders</field>
             <field name="arch" type="xml">
     	         <search string="Search MercadoLibre Orders Information">
+                 <field name="name" string="Order Name"/>
                  <field name="order_id" string="Order ID"/>
                  <field name="pack_id" string="Pack ID"/>
                  <field name="status" string="Status"/>
