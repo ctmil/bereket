@@ -2264,7 +2264,7 @@ class mercadolibre_orders(models.Model):
                             #        if (spick.state in ['assigned']):
                             #            spick.button_validate()
 
-    sale_order_shipment_status = fields.Char(string="Odoo Shipment Status",compute="_sale_order_shipment_status",search="_search_sale_order_shipment_status",store=True)
+    sale_order_shipment_status = fields.Char(string="Odoo Shipment Status",compute="_sale_order_shipment_status",store=True,index=True)
 
 
     _sql_constraints = [
