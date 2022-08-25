@@ -57,7 +57,7 @@ class SaleOrder(models.Model):
                 #_logger.info("order_type:"+str(order_type))
 
     def meli_deliver( self, meli=None, config=None, data=None):
-        #_logger.info("meli_deliver")
+        _logger.info("meli_stock > meli_deliver")
         res= {}
         if "mercadolibre_stock_mrp_production_process" in config._fields and config.mercadolibre_stock_mrp_production_process:
             self.meli_produce( meli=meli, config=config, data=data )
@@ -66,7 +66,7 @@ class SaleOrder(models.Model):
             for spick in self.picking_ids:
                 _logger.info(spick)
                 if self.warehouse_id and spick.location_id:
-                    
+
                     if self.warehouse_id.lot_stock_id.id != spick.location_id.id:
                         _logger.info("Fixing location!")
                         spick.location_id = self.warehouse_id.lot_stock_id
@@ -75,6 +75,10 @@ class SaleOrder(models.Model):
                         _logger.info("Fixing location NOT POSSIBLE! Aborting delivery.")
                         return { "error": "Fixing location NOT POSSIBLE! Aborting delivery." }
 
+                if (spick.state in ['confirmed','waiting','draft']):
+                    _logger.info("action_assign")
+                    res = spick.action_assign()
+                    _logger.info("action_assign res:"+str(res)+" state:"+str(spick.state))
 
                 if (spick.move_line_ids):
                     _logger.info(spick.move_line_ids)

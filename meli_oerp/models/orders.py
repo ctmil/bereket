@@ -264,6 +264,7 @@ class sale_order(models.Model):
 
     def meli_deliver( self, meli=None, config=None, data=None ):
         res = {}
+        _logger.info("meli_deliver!")
         if (self.state=="sale" or self.state=="done"):
             #spick = stock_picking.search([('order_id','=',self.id)])
             _logger.info("paid_delivered ok! delivering")
