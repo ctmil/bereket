@@ -255,6 +255,12 @@
                  <field name="company_id" string="Compania"/>
                  <field name="seller_id" string="Vendedor"/>
                  <!--field name="seller" string="Vendedor"/-->
+                 <separator/>
+                 <filter string="Status de entrega en proceso" name="sale_order_shipment_status_ml" domain="[('sale_order_shipment_status','=','en proceso')]" />
+                 <filter string='Status de Orden' domain="[]"
+                       context="{'group_by' : 'status'}" name="meli_sale_order_status"/>
+                <filter string='Status de entrega de Odoo' domain="[]"
+                       context="{'group_by' : 'sale_order_shipment_status'}" name="meli_sale_order_shipment_status"/>
     	         </search>
             </field>
         </record>
