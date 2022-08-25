@@ -77,7 +77,12 @@ class SaleOrder(models.Model):
 
                 if (spick.state in ['confirmed','waiting','draft']):
                     _logger.info("action_assign")
-                    res = spick.action_assign()
+                    try:
+                        res = spick.action_assign()
+                    except Exception as e:
+                        _logger.error("stock pick action_assign/button_validate/action_done error"+str(e))
+                        res = { 'error': str(e) }
+                        pass;
                     _logger.info("action_assign res:"+str(res)+" state:"+str(spick.state))
 
                 if (spick.move_line_ids):
@@ -106,6 +111,7 @@ class SaleOrder(models.Model):
                             _logger.error("stock pick action_assign/button_validate/action_done error"+str(e))
                             res = { 'error': str(e) }
                             pass;
+        return res
 
     def meli_produce( self, meli=None, config=None, data=None):
         #_logger.info("meli_produce")
