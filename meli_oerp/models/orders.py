@@ -1875,7 +1875,7 @@ class mercadolibre_orders(models.Model):
     def orders_import_order( self, order_id, context=None, meli=None, config=None ):
         if not order_id:
             return {"error": "order_id missing"}
-            
+
         context = context or self.env.context
         warningobj = self.env['meli.warning']
 
@@ -1883,20 +1883,20 @@ class mercadolibre_orders(models.Model):
         company = self.env.user.company_id
 
         order_obj = self.env['mercadolibre.orders']
-        
+
         if not meli:
             meli = self.env['meli.util'].get_new_instance(company)
 
         if not config:
             config = company
-            
+
         morder = order_obj.search( [('order_id','=',str(order_id))], limit=1 )
         if morder:
             return { "error": str(order_id)+" already in Odoo" }
-        
+
         response = meli.get("/orders/"+str(order_id), {'access_token':meli.access_token})
         order_json = response.json()
-        
+
         if order_json:
             if "error" in order_json:
                 return { "error": order_json }
@@ -1907,10 +1907,10 @@ class mercadolibre_orders(models.Model):
                     return { "ret": ret }
         else:
             return { "error": "no order json "+str(order_json) }
-        
+
         return {}
-        
-    
+
+
     def orders_update_order( self, context=None, meli=None, config=None ):
 
         #get with an item id
@@ -2015,10 +2015,10 @@ class mercadolibre_orders(models.Model):
         #_logger.info( orders_json )
         if "results" in orders_json:
             for order_json in orders_json["results"]:
-                if order_json:                    
+                if order_json:
                     pdata = {"id": False, "order_json": order_json}
                     if "id" in order_json and fetch_id_only:
-                        
+
                         #_logger.info( order_json["id"] )
                         order_fields = self.prepare_ml_order_vals( order_json=order_json, meli=meli, config=config )
                         in_range = True
@@ -2030,8 +2030,8 @@ class mercadolibre_orders(models.Model):
                             #_logger.info( "orders_update_order_json > filter:" + str(error) )
                             #return error
                             in_range = False
-                
-                
+
+
                         if (    "mercadolibre_filter_order_datetime" in config._fields
                                 and "date_closed" in order_fields
                                 and config.mercadolibre_filter_order_datetime
@@ -2039,7 +2039,7 @@ class mercadolibre_orders(models.Model):
                             #error = { "error": "orden filtrada por FROM > " + str(order_fields["date_closed"]) + " inferior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime)) }
                             #_logger.info( "orders_update_order_json > filter:" + str(error) )
                             in_range = False
-                
+
                         if (    "mercadolibre_filter_order_datetime_to" in config._fields
                                 and "date_closed" in order_fields
                                 and config.mercadolibre_filter_order_datetime_to
@@ -2047,7 +2047,7 @@ class mercadolibre_orders(models.Model):
                             #error = { "error": "orden filtrada por fecha TO > " + str(order_fields["date_closed"]) + " superior a "+str(ml_datetime(config.mercadolibre_filter_order_datetime_to)) }
                             #_logger.info( "orders_update_order_json > filter:" + str(error) )
                             in_range = False
-                            
+
                         if in_range:
                             __fetch_ids.append(str(order_json["id"]))
                     else:
@@ -2070,7 +2070,7 @@ class mercadolibre_orders(models.Model):
         company = self.env.user.company_id
         if not config:
             config = company
-        
+
         if not meli:
             meli = self.env['meli.util'].get_new_instance(company)
 
@@ -2158,7 +2158,7 @@ class mercadolibre_orders(models.Model):
                 order_items = self.env['mercadolibre.order_items'].search([('product_id','!=',False)], limit=10000)
             else:
                 order_items = self.env['mercadolibre.order_items'].search([('product_id','=',False)], limit=10000)
-            
+
             #if (value):
             for item in order_items:
                 #if (value in p.meli_publications):
@@ -2170,35 +2170,35 @@ class mercadolibre_orders(models.Model):
                 'The field name is not searchable'
                 ' with the operator: {}',format(operator)
             )
-            
+
     order_items = fields.One2many('mercadolibre.order_items','order_id',string='Order Items' )
 
     def _order_product( self ):
         for ord in self:
             ord.order_product = False
-            
+
             if ord.order_items and ord.order_items[0]:
                 ord.order_product = ord.order_items[0].product_id
-                
+
     order_product = fields.Many2one('product.product',string='Order Product',compute=_order_product, search=search_order_order_product )
-    
+
     def _order_product_sku( self ):
         for ord in self:
             ord.order_product_sku = ""
-            
+
             if ord.order_items and ord.order_items[0]:
                 ord.order_product_sku = ord.order_items[0].seller_sku
-    
+
     order_product_sku = fields.Char(string='Order Product Sku', compute=_order_product_sku )
 
     def _order_product_units( self ):
         for ord in self:
             ord.order_product_units = 0
-            
+
             if ord.order_items and ord.order_items[0]:
                 ord.order_product_units = ord.order_items[0].quantity
-    
-    
+
+
     order_product_units = fields.Integer(string='Order Product Units',compute=_order_product_units )
 
 
@@ -2235,6 +2235,35 @@ class mercadolibre_orders(models.Model):
 
     shipment_status = fields.Char(string="Shipment Status",related="shipment.status",index=True)
     shipment_substatus = fields.Char(string="Shipment SubStatus",related="shipment.substatus",index=True)
+
+    def _sale_order_shipment_status( self ):
+        for mord in self:
+            mor.sale_order_shipment_status = ""
+            so = mor.sale_order
+            if so:
+                if so.picking_ids:
+                    for spick in so.picking_ids:
+                        #try:
+                            #if (spick.state in ['confirmed','waiting','draft']):
+                        mor.sale_order_shipment_status = "en proceso"
+                        if (spick.move_line_ids and mor.order_product):
+                            for pop in spick.move_line_ids:
+                                if pop.product_id and pop.product_id.id==mor.order_product.id:
+                                    mor.sale_order_shipment_status = str(spick.state)
+
+                            #if (spick.move_line_ids):
+                            #    if (len(spick.move_line_ids)>=1):
+                            #        for pop in spick.move_line_ids:
+                            #            _logger.info(pop)
+                            #            if (pop.qty_done==0.0 and pop.product_qty>=0.0):
+                            #                pop.qty_done = pop.product_qty
+                            #        #_logger.info("do_new_transfer")
+
+                            #        if (spick.state in ['assigned']):
+                            #            spick.button_validate()
+
+    sale_order_shipment_status = fields.Char(string="Odoo Shipment Status",compute="_sale_order_shipment_status")
+
 
     _sql_constraints = [
         ('unique_order_id', 'unique(order_id)', 'Meli Order id already exists!')
