@@ -2238,18 +2238,18 @@ class mercadolibre_orders(models.Model):
 
     def _sale_order_shipment_status( self ):
         for mord in self:
-            mor.sale_order_shipment_status = ""
-            so = mor.sale_order
+            mord.sale_order_shipment_status = ""
+            so = mord.sale_order
             if so:
                 if so.picking_ids:
                     for spick in so.picking_ids:
                         #try:
                             #if (spick.state in ['confirmed','waiting','draft']):
-                        mor.sale_order_shipment_status = "en proceso"
-                        if (spick.move_line_ids and mor.order_product):
+                        mord.sale_order_shipment_status = "en proceso"
+                        if (spick.move_line_ids and mord.order_product):
                             for pop in spick.move_line_ids:
-                                if pop.product_id and pop.product_id.id==mor.order_product.id:
-                                    mor.sale_order_shipment_status = str(spick.state)
+                                if pop.product_id and pop.product_id.id==mord.order_product.id:
+                                    mord.sale_order_shipment_status = str(spick.state)
 
                             #if (spick.move_line_ids):
                             #    if (len(spick.move_line_ids)>=1):
