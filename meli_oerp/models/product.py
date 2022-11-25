@@ -1557,11 +1557,13 @@ class product_product(models.Model):
                     pass;
             #TODO: agregar parametro para esto: ml_auto_website_published_if_available  default true
             if (1==1 and rjson['available_quantity']>0):
-                product_template.website_published = True
+                if "website_published" in product_template._fields:
+                    product_template.website_published = True
 
         #TODO: agregar parametro para esto: ml_auto_website_unpublished_if_not_available default false
         if (1==2 and rjson['available_quantity']==0):
-            product_template.website_published = False
+            if "website_published" in product_template._fields:
+                product_template.website_published = False
 
         posting_fields = {
             'posting_date': str(datetime.now()),

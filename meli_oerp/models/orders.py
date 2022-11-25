@@ -2202,7 +2202,7 @@ class mercadolibre_orders(models.Model):
                 ord.order_product_units = ord.order_items[0].quantity
 
 
-    order_product_units = fields.Integer(string='Order Product Units',compute=_order_product_units )
+    order_product_units = fields.Float(string='Order Product Units',compute=_order_product_units )
 
 
     payments = fields.One2many('mercadolibre.payments','order_id',string='Payments' )

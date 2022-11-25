@@ -141,7 +141,7 @@ class product_template_update(models.TransientModel):
         for product_id in product_ids:
             product = product_obj.browse(product_id)
             if (product):
-                if self.force_meli_pub and not product.meli_pub:
+                if self.force_meli_pub:# and not product.meli_pub:
                     product.meli_pub = True
                     for variant in product.product_variant_ids:
                         variant.meli_pub = True
