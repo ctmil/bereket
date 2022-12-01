@@ -1040,7 +1040,8 @@ class product_product(models.Model):
                     _logger.info("Creating new image")
                     bin_updating = True
                     pimg_fields["name"] = product.meli_title or product.name;
-                    pimage = self.env["product.image"].create(pimg_fields)
+                    if "product.image" in self.env:
+                        pimage = self.env["product.image"].create(pimg_fields)
 
                 if (pimage):
                     pimage.write(pimg_fields)
