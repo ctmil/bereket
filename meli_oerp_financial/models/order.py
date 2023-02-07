@@ -49,9 +49,9 @@ class SaleOrder(models.Model):
             #Margen de la venta: Precio unitario - Costo - Comision - Envio (no quita el impuesto como margen)
             ord.meli_margen_real = 0
             for item in ord.order_line:
-                if item.product_id.default_code == "ENVIO":
+                if (item.product_id.default_code == "ENVIO"):
                     ord.meli_margen_real-= ord.purchase_price;
-                else if item.product_id.default_code == "COMISIONML":
+                elif (item.product_id.default_code == "COMISIONML"):
                     ord.meli_margen_real-= ord.purchase_price;
                 else:
                     ord.meli_margen_real+= ( ord.price_unit- ord.purchase_price ) * ord.product_uom_qty;
