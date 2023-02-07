@@ -44,20 +44,27 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
 
-    def _meli_margen_real( self):
+    def _meli_margin_real( self):
         for ord in self:
+
             #Margen de la venta: Precio unitario - Costo - Comision - Envio (no quita el impuesto como margen)
-            ord.meli_margen_real = 0
+
+            ord.meli_margin_real = 0
+
             for item in ord.order_line:
                 if (item.product_id.default_code == "ENVIO"):
-                    ord.meli_margen_real-= ord.purchase_price;
+                    ord.meli_margin_real-= ord.purchase_price;
                 elif (item.product_id.default_code == "COMISIONML"):
-                    ord.meli_margen_real-= ord.purchase_price;
+                    ord.meli_margin_real-= ord.purchase_price;
                 else:
-                    ord.meli_margen_real+= ( ord.price_unit- ord.purchase_price ) * ord.product_uom_qty;
+                    ord.meli_margin_real+= ( ord.price_unit- ord.purchase_price ) * ord.product_uom_qty;
 
 
-    meli_margen_real = fields.Float(string="Margen Real (ML)", help="Forumla: (Precio_unitario sin impuesto - costo producto) x cantidad - costo comision - costo envio" compute=_meli_margen_real,store=True,index=True)
+    meli_margin_real = fields.Float(string="Margen Real (ML)",
+        help="Forumla: (Precio_unitario sin impuesto - costo producto) x cantidad - costo comision - costo envio",
+         compute=_meli_margen_real,
+         store=True,
+         index=True)
 
     def confirm_ml_financial( self, meli=None, config=None, force=False ):
 
