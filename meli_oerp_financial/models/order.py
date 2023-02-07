@@ -53,11 +53,11 @@ class SaleOrder(models.Model):
 
             for item in ord.order_line:
                 if (item.product_id.default_code == "ENVIO"):
-                    ord.meli_margin_real-= ord.purchase_price;
+                    ord.meli_margin_real-= item.purchase_price;
                 elif (item.product_id.default_code == "COMISIONML"):
-                    ord.meli_margin_real-= ord.purchase_price;
+                    ord.meli_margin_real-= item.purchase_price;
                 else:
-                    ord.meli_margin_real+= ( ord.price_unit- ord.purchase_price ) * ord.product_uom_qty;
+                    ord.meli_margin_real+= ( item.price_unit- item.purchase_price ) * item.product_uom_qty;
 
 
     meli_margin_real = fields.Float(string="Margen Real (ML)",
