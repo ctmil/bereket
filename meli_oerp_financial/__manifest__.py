@@ -9,7 +9,7 @@
 {
     'name': 'MercadoLibre Financial Extension / Mercado Libre Publisher Extension',
     'summary': 'MercadoLibre Financial Extension / Mercado Libre Publisher Extension',
-    'version': '15.0.22.1',
+    'version': '15.0.23.2',
     'author': 'Moldeo Interactive',
     'website': 'https://www.moldeointeractive.com',
     "category": "Sales",
