@@ -62,7 +62,7 @@ class SaleOrder(models.Model):
 
     meli_margin_real = fields.Float(string="Margen Real (ML)",
         help="Forumla: (Precio_unitario sin impuesto - costo producto) x cantidad - costo comision - costo envio",
-         compute=_meli_margen_real,
+         compute=_meli_margin_real,
          store=True,
          index=True)
 
